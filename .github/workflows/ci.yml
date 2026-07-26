@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9.15.4'
+  # CI uses a local Postgres service container (no pooler), so pooled + direct URLs are identical.
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/studioflow_test?schema=public
+  DIRECT_URL: postgresql://postgres:postgres@localhost:5432/studioflow_test?schema=public
+
+jobs:
+  ci:
+    name: Install → TypeCheck → Lint → Build → Test → Migrate
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: studioflow_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm typecheck
+        name: TypeCheck
+
+      - run: pnpm lint
+        name: Lint
+
+      - run: pnpm build
+        name: Build
+
+      - run: pnpm test
+        name: Test
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+
+      - name: Check DB reachable (attribution gate)
+        run: |
+          pg_isready -h localhost -p 5432 -U postgres -d studioflow_test \
+            || { echo "❌ FAIL: Throwaway Postgres is not reachable — check 'services.postgres' in this workflow."; exit 1; }
+
+      - name: Migrate + verify idempotency (throwaway DB)
+        run: pnpm --filter @studioflow/db migrate:verify
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
+          DIRECT_URL: ${{ env.DIRECT_URL }}
