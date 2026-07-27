@@ -1,11 +1,406 @@
 datasource db {
   provider  = "postgresql"
-  // App/runtime: Supabase POOLED connection (PgBouncer, port 6543).
   url       = env("DATABASE_URL")
-  // Migrations: DIRECT connection (port 5432) — the pooler can't run DDL/migrations.
   directUrl = env("DIRECT_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
+}
+
+// ── Enums ────────────────────────────────────────────────────────────────
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  BEFORE_AFTER
+  YOUTUBE
+  VIMEO
+  AI
+  LOTTIE
+}
+
+enum ProjectMediaType {
+  GALLERY
+  VIDEO
+  BEFORE_AFTER
+}
+
+enum HomepageSectionType {
+  HERO
+  SERVICES
+  PROJECTS
+  CLIENTS
+  STATS
+  TESTIMONIALS
+  FAQ
+  CTA
+}
+
+// ── Operational entities ─────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String
+  email        String   @unique
+  passwordHash String
+  roleId       String   @db.Uuid
+  role         Role     @relation(fields: [roleId], references: [id])
+  active       Boolean  @default(true)
+
+  clientsCreated    Client[]    @relation("clientCreatedBy")
+  clientsUpdated    Client[]    @relation("clientUpdatedBy")
+  servicesCreated   Service[]   @relation("serviceCreatedBy")
+  servicesUpdated   Service[]   @relation("serviceUpdatedBy")
+  projectsCreated   Project[]   @relation("projectCreatedBy")
+  projectsUpdated   Project[]   @relation("projectUpdatedBy")
+  homepageSectionsCreated   HomepageSection[]   @relation("homepageSectionCreatedBy")
+  homepageSectionsUpdated   HomepageSection[]   @relation("homepageSectionUpdatedBy")
+  testimonialsCreated       Testimonial[]       @relation("testimonialCreatedBy")
+  testimonialsUpdated       Testimonial[]       @relation("testimonialUpdatedBy")
+  pagesCreated       Page[]   @relation("pageCreatedBy")
+  pagesUpdated       Page[]   @relation("pageUpdatedBy")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([roleId])
+}
+
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  permissions String[]
+  isOwner     Boolean  @default(false)
+
+  users User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Media {
+  id         String    @id @default(uuid()) @db.Uuid
+  type       MediaType
+  r2Key      String
+  url        String
+  width      Int?
+  height     Int?
+  alt        String?
+  folderId   String?   @db.Uuid
+  folder     Folder?   @relation(fields: [folderId], references: [id])
+  tags       String[]
+  usageCount Int       @default(0)
+
+  clientLogos    Client[]
+  serviceIcons   Service[]
+  settingsLogos  Settings[]
+  projectMedia   ProjectMedia[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([folderId])
+  @@index([type])
+}
+
+model Folder {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  parentId  String?  @db.Uuid
+  parent    Folder?  @relation("FolderHierarchy", fields: [parentId], references: [id])
+  children  Folder[] @relation("FolderHierarchy")
+
+  media Media[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([parentId])
+}
+
+// ── Settings (singleton) ─────────────────────────────────────────────────
+
+model Settings {
+  id           String   @id @default(uuid()) @db.Uuid
+  siteName     String
+  logoId       String?  @db.Uuid
+  logo         Media?   @relation(fields: [logoId], references: [id])
+  socialLinks  Json     @default("{}")
+  seoDefaults  Json?    @default("{}")
+  analyticsIds Json?    @default("{}")
+  contact      Json?    @default("{}")
+  version      Int      @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ── Content types (each embeds the Content Engine base fields) ────────────
+
+model Client {
+  id   String @id @default(uuid()) @db.Uuid
+  name String
+  logoId String? @db.Uuid
+  logo   Media?  @relation(fields: [logoId], references: [id])
+  website String?
+  order   Int     @default(0)
+
+  // Content Engine base fields
+  status      ContentStatus @default(DRAFT)
+  slug        String
+  featured    Boolean       @default(false)
+  seoTitle           String?
+  seoMetaDescription String?
+  seoCanonicalUrl    String?
+  seoOgImage         String?
+  seoTwitterCard     String?
+  seoStructuredData  Json?
+  seoRobots          String?
+  locale        String     @default("en")
+  version       Int        @default(1)
+  publishedAt   DateTime?
+  createdById String? @db.Uuid
+  updatedById String? @db.Uuid
+  createdBy   User?   @relation("clientCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User?   @relation("clientUpdatedBy", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projects Project[]
+
+  @@unique([slug])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([order])
+}
+
+model Service {
+  id   String @id @default(uuid()) @db.Uuid
+  name String
+  description String?
+  iconMediaId String? @db.Uuid
+  iconMedia   Media?  @relation(fields: [iconMediaId], references: [id])
+  order       Int     @default(0)
+
+  status      ContentStatus @default(DRAFT)
+  slug        String
+  featured    Boolean       @default(false)
+  seoTitle           String?
+  seoMetaDescription String?
+  seoCanonicalUrl    String?
+  seoOgImage         String?
+  seoTwitterCard     String?
+  seoStructuredData  Json?
+  seoRobots          String?
+  locale        String     @default("en")
+  version       Int        @default(1)
+  publishedAt   DateTime?
+  createdById String? @db.Uuid
+  updatedById String? @db.Uuid
+  createdBy   User?   @relation("serviceCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User?   @relation("serviceUpdatedBy", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subServices SubService[]
+  projects    ProjectService[]
+
+  @@unique([slug])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([order])
+}
+
+model SubService {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  order       Int      @default(0)
+
+  serviceId String  @db.Uuid
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([serviceId])
+  @@index([order])
+}
+
+model Project {
+  id    String @id @default(uuid()) @db.Uuid
+  title String
+  overview    String?
+  description String?
+  challenge   String?
+  solution    String?
+  results     String?
+  externalLinks Json? @default("[]")
+  clientId    String?  @db.Uuid
+  client      Client?  @relation(fields: [clientId], references: [id])
+
+  status      ContentStatus @default(DRAFT)
+  slug        String
+  featured    Boolean       @default(false)
+  seoTitle           String?
+  seoMetaDescription String?
+  seoCanonicalUrl    String?
+  seoOgImage         String?
+  seoTwitterCard     String?
+  seoStructuredData  Json?
+  seoRobots          String?
+  locale        String     @default("en")
+  version       Int        @default(1)
+  publishedAt   DateTime?
+  createdById String? @db.Uuid
+  updatedById String? @db.Uuid
+  createdBy   User?   @relation("projectCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User?   @relation("projectUpdatedBy", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  services         ProjectService[]
+  media            ProjectMedia[]
+  relatedProjects  RelatedProject[]  @relation("RelatedProjectA")
+  relatedTo        RelatedProject[]  @relation("RelatedProjectB")
+
+  @@unique([slug])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([clientId])
+}
+
+model HomepageSection {
+  id      String               @id @default(uuid()) @db.Uuid
+  type    HomepageSectionType
+  enabled Boolean              @default(true)
+  order   Int                  @default(0)
+  config  Json                 @default("{}")
+
+  status      ContentStatus @default(DRAFT)
+  slug        String
+  featured    Boolean       @default(false)
+  seoTitle           String?
+  seoMetaDescription String?
+  seoCanonicalUrl    String?
+  seoOgImage         String?
+  seoTwitterCard     String?
+  seoStructuredData  Json?
+  seoRobots          String?
+  locale        String     @default("en")
+  version       Int        @default(1)
+  publishedAt   DateTime?
+  createdById String? @db.Uuid
+  updatedById String? @db.Uuid
+  createdBy   User?   @relation("homepageSectionCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User?   @relation("homepageSectionUpdatedBy", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([slug])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([order])
+  @@index([type])
+}
+
+model Testimonial {
+  id String @id @default(uuid()) @db.Uuid
+
+  status      ContentStatus @default(DRAFT)
+  slug        String
+  featured    Boolean       @default(false)
+  seoTitle           String?
+  seoMetaDescription String?
+  seoCanonicalUrl    String?
+  seoOgImage         String?
+  seoTwitterCard     String?
+  seoStructuredData  Json?
+  seoRobots          String?
+  locale        String     @default("en")
+  version       Int        @default(1)
+  publishedAt   DateTime?
+  createdById String? @db.Uuid
+  updatedById String? @db.Uuid
+  createdBy   User?   @relation("testimonialCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User?   @relation("testimonialUpdatedBy", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([slug])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+}
+
+model Page {
+  id String @id @default(uuid()) @db.Uuid
+
+  status      ContentStatus @default(DRAFT)
+  slug        String
+  featured    Boolean       @default(false)
+  seoTitle           String?
+  seoMetaDescription String?
+  seoCanonicalUrl    String?
+  seoOgImage         String?
+  seoTwitterCard     String?
+  seoStructuredData  Json?
+  seoRobots          String?
+  locale        String     @default("en")
+  version       Int        @default(1)
+  publishedAt   DateTime?
+  createdById String? @db.Uuid
+  updatedById String? @db.Uuid
+  createdBy   User?   @relation("pageCreatedBy", fields: [createdById], references: [id])
+  updatedBy   User?   @relation("pageUpdatedBy", fields: [updatedById], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([slug])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+}
+
+// ── Join tables ──────────────────────────────────────────────────────────
+
+model ProjectService {
+  projectId String  @db.Uuid
+  project   Project @relation(fields: [projectId], references: [id])
+  serviceId String  @db.Uuid
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  @@id([projectId, serviceId])
+}
+
+model ProjectMedia {
+  projectId String           @db.Uuid
+  project   Project          @relation(fields: [projectId], references: [id])
+  mediaId   String           @db.Uuid
+  media     Media            @relation(fields: [mediaId], references: [id])
+  type      ProjectMediaType
+  order     Int              @default(0)
+
+  @@id([projectId, mediaId, type])
+  @@index([mediaId])
+}
+
+model RelatedProject {
+  projectId        String @db.Uuid
+  project          Project @relation("RelatedProjectA", fields: [projectId], references: [id])
+  relatedProjectId String @db.Uuid
+  relatedProject   Project @relation("RelatedProjectB", fields: [relatedProjectId], references: [id])
+
+  @@id([projectId, relatedProjectId])
 }
