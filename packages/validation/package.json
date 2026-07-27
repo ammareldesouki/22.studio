@@ -10,6 +10,7 @@
     "./users": "./src/users.ts",
     "./roles": "./src/roles.ts",
     "./media": "./src/media.ts",
+    "./projects": "./src/projects.ts",
     "./shared": "./src/shared.ts"
   },
   "scripts": {

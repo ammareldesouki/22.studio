@@ -90,10 +90,10 @@ delete blocked; invalid upload rejected.
 **Independent Test**: Create title-only Draft → enrich with refs/sections → publish/archive;
 duplicate title auto-suffixes slug; concurrent edit → 409.
 
-- [ ] T024 [P] [US3] Projects service/repository in `packages/core/src/projects/` — CRUD, `ProjectMedia`(typed)/`ProjectService`/`RelatedProject` refs with transactional usageCount, lifecycle + SEO, optimistic concurrency
-- [ ] T025 [US3] Projects route handlers in `apps/admin/app/api/projects/` (+ `[id]/status`) guarded by `projects:create|edit|publish|delete` per contracts/projects.md
-- [ ] T026 [P] [US3] zod schemas for projects (title required, all else optional) in `packages/validation/src/`
-- [ ] T027 [US3] Tests — title-only Draft, media/client/service refs, publish stamps `publishedAt`, archive/restore, **slug auto-suffix**, **optimistic-concurrency 409** (FR-025)
+- [X] T024 [P] [US3] Projects service/repository in `packages/core/src/projects/` — CRUD, `ProjectMedia`(typed)/`ProjectService`/`RelatedProject` refs with transactional usageCount, lifecycle + SEO, optimistic concurrency
+- [X] T025 [US3] Projects route handlers in `apps/admin/app/api/projects/` (+ `[id]/status`) guarded by `projects:create|edit|publish|delete` per contracts/projects.md
+- [X] T026 [P] [US3] zod schemas for projects (title required, all else optional) in `packages/validation/src/`
+- [X] T027 [US3] Tests — title-only Draft, media/client/service refs, publish stamps `publishedAt`, archive/restore, **slug auto-suffix**, **optimistic-concurrency 409** (FR-025)
 
 **Checkpoint**: Core content type complete.
 

@@ -132,8 +132,8 @@ describe('MediaService', () => {
     it('only returns confirmed uploads (hides unconfirmed intents)', async () => {
       vi.mocked(db.media.findMany).mockResolvedValueOnce([] as never[]);
       await mediaService.list({ limit: 10 });
-      const arg = vi.mocked(db.media.findMany).mock.calls[0]![0] as { where: Record<string, unknown> };
-      expect(arg.where.confirmed).toBe(true);
+      const args: unknown = vi.mocked(db.media.findMany).mock.calls[0]?.[0];
+      expect((args as { where: Record<string, unknown> }).where.confirmed).toBe(true);
     });
   });
 
@@ -143,9 +143,10 @@ describe('MediaService', () => {
       vi.mocked(db.media.updateMany).mockResolvedValueOnce({ count: 1 } as never);
       vi.mocked(db.media.findUniqueOrThrow).mockResolvedValueOnce({ id: 'm1' } as never);
       await mediaService.update('m1', { tags: ['hero'], version: 1 });
-      const arg = vi.mocked(db.media.updateMany).mock.calls[0]![0] as { data: Record<string, unknown> };
-      expect(arg.data).not.toHaveProperty('folderId');
-      expect(arg.data.tags).toEqual(['hero']);
+      const args: unknown = vi.mocked(db.media.updateMany).mock.calls[0]?.[0];
+      const data = (args as { data: Record<string, unknown> }).data;
+      expect(data).not.toHaveProperty('folderId');
+      expect(data.tags).toEqual(['hero']);
     });
 
     it('clears folderId when explicitly set to null', async () => {
@@ -153,8 +154,9 @@ describe('MediaService', () => {
       vi.mocked(db.media.updateMany).mockResolvedValueOnce({ count: 1 } as never);
       vi.mocked(db.media.findUniqueOrThrow).mockResolvedValueOnce({ id: 'm1' } as never);
       await mediaService.update('m1', { folderId: null, version: 1 });
-      const arg = vi.mocked(db.media.updateMany).mock.calls[0]![0] as { data: Record<string, unknown> };
-      expect(arg.data.folderId).toBeNull();
+      const args: unknown = vi.mocked(db.media.updateMany).mock.calls[0]?.[0];
+      const data = (args as { data: Record<string, unknown> }).data;
+      expect(data.folderId).toBeNull();
     });
 
     it('throws 409 on version conflict', async () => {
@@ -171,8 +173,9 @@ describe('MediaService', () => {
       vi.mocked(db.media.findUnique).mockResolvedValueOnce({ id: 'm1', r2Key: 'uploads/u1/p.jpg' } as never);
       vi.mocked(db.media.findUniqueOrThrow).mockResolvedValueOnce({ id: 'm1', confirmed: true } as never);
       await mediaService.confirm('m1');
-      const arg = vi.mocked(db.media.update).mock.calls[0]![0] as { data: Record<string, unknown> };
-      expect(arg.data.confirmed).toBe(true);
+      const args: unknown = vi.mocked(db.media.update).mock.calls[0]?.[0];
+      const data = (args as { data: Record<string, unknown> }).data;
+      expect(data.confirmed).toBe(true);
     });
   });
 

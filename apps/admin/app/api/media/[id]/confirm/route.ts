@@ -8,7 +8,7 @@ function handleError(e: unknown): Response | null {
   return null;
 }
 
-type Ctx = { params: Promise<{ id: string }> };
+interface Ctx { params: Promise<{ id: string }> }
 
 export async function POST(request: Request, { params }: Ctx): Promise<Response> {
   try {
