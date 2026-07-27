@@ -54,26 +54,7 @@ green; tick T001–T011 in tasks.md; stop.
 
 ---
 
-## Phase C — US2: Media Library (T020–T023)
-
-```
-Read AGENTS.md and specs/002-core-cms/{spec.md,tasks.md,data-model.md} and
-specs/002-core-cms/contracts/media.md. Requires Phase A (US1 recommended for guard/tests).
-Implement ONLY Phase 4 / User Story 2 (T020–T023).
-
-- packages/core/media: presigned direct-to-R2 upload (upload-intent validates type/size → presigned
-  PUT; confirm finalizes the Media row; no orphan rows), folders, tags, usage-count, delete-protection.
-- apps/admin route handlers: /api/media (upload-intent, [id]/confirm, list+filter, patch, delete) and
-  /api/folders — guarded by media:upload / media:delete.
-- zod schemas: image ≤10MB (jpeg,png,webp,avif,svg), video ≤100MB (mp4,webm); YouTube/Vimeo stored as
-  a Media row with URL (no upload).
-- Tests: reuse → usageCount=2, delete-protection 409 (SC-004), invalid upload 422.
-
-NO UI. Full gate green; tick T020–T023; stop.
-```
-
----
-
+##
 ## Phase D — US3: Projects (T024–T027)
 
 ```

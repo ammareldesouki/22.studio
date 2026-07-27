@@ -114,6 +114,8 @@ model Media {
   folder     Folder?   @relation(fields: [folderId], references: [id])
   tags       String[]
   usageCount Int       @default(0)
+  version    Int       @default(1)
+  confirmed  Boolean   @default(false)
 
   clientLogos    Client[]
   serviceIcons   Service[]

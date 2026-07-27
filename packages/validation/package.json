@@ -9,6 +9,7 @@
     "./auth": "./src/auth.ts",
     "./users": "./src/users.ts",
     "./roles": "./src/roles.ts",
+    "./media": "./src/media.ts",
     "./shared": "./src/shared.ts"
   },
   "scripts": {

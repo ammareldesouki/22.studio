@@ -74,10 +74,10 @@ non-permitted are denied (deny-by-default).
 **Independent Test**: Upload, reference from two entities (seeded), confirm usageCount=2 and
 delete blocked; invalid upload rejected.
 
-- [ ] T020 [P] [US2] Media + Folder service/repository in `packages/core/src/media/` — presigned upload-intent (validate type/size), confirm/finalize, folders, tags, usage-count, delete-protection
-- [ ] T021 [US2] Media route handlers in `apps/admin/app/api/media/` (upload-intent, `[id]/confirm`, list/filter, patch, delete) + `apps/admin/app/api/folders/` per contracts/media.md, guarded by `media:upload`/`media:delete`
-- [ ] T022 [P] [US2] zod schemas for media/folders (image ≤10MB `jpeg,png,webp,avif,svg`; video ≤100MB `mp4,webm`) in `packages/validation/src/`
-- [ ] T023 [US2] Tests — reuse → usageCount, delete-protection **409** (SC-004), invalid upload **422**, presigned-intent shape
+- [X] T020 [P] [US2] Media + Folder service/repository in `packages/core/src/media/` — presigned upload-intent (validate type/size), confirm/finalize, folders, tags, usage-count, delete-protection
+- [X] T021 [US2] Media route handlers in `apps/admin/app/api/media/` (upload-intent, `[id]/confirm`, list/filter, patch, delete) + `apps/admin/app/api/folders/` per contracts/media.md, guarded by `media:upload`/`media:delete`
+- [X] T022 [P] [US2] zod schemas for media/folders (image ≤10MB `jpeg,png,webp,avif,svg`; video ≤100MB `mp4,webm`) in `packages/validation/src/`
+- [X] T023 [US2] Tests — reuse → usageCount, delete-protection **409** (SC-004), invalid upload **422**, presigned-intent shape
 
 **Checkpoint**: Media reusable + protected.
 
