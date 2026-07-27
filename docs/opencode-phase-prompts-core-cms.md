@@ -32,7 +32,7 @@ specs/002-core-cms/contracts/. Implement ONLY Phase 1 (Setup, T001–T004) and P
 T005–T011).
 
 - Scaffold packages/core (module subdirs per plan) with typecheck/lint/test scripts + vitest.config.
-- Add deps: argon2, jose, @aws-sdk/client-s3 + s3-request-presigner (to packages/core).
+- Add deps: bcryptjs, jose, @aws-sdk/client-s3 + s3-request-presigner (to packages/core).
 - Add the fixed permission catalog + Permission type in packages/types.
 - Extend packages/db/prisma/schema.prisma with ALL models/enums/indexes/join tables per data-model.md
   (Content Engine base on content types; User/Role/Media/Folder/Client/Service/SubService/Project/
@@ -50,22 +50,6 @@ green; tick T001–T011 in tasks.md; stop.
 
 ## Phase B — US1: Auth + Users + Roles (T012–T019)
 
-```
-Read AGENTS.md and specs/002-core-cms/{spec.md,tasks.md,data-model.md} and
-specs/002-core-cms/contracts/{auth.md,users-roles.md}. Requires Phase A.
-Implement ONLY Phase 3 / User Story 1 (T012–T019).
-
-- packages/core: auth (login argon2, access JWT via jose, refresh rotation + revocation, logout),
-  users (CRUD, email-unique, set-password, last-owner guard), roles (CRUD, permissions ⊆ catalog,
-  immutable owner role, block delete while assigned).
-- apps/admin route handlers: /api/auth/{login,refresh,logout} (httpOnly refresh cookie, rate-limit
-  login), /api/users (+[id]/password), /api/roles, /api/permissions — all behind the session guard
-  with the correct permission (users:manage / roles:manage), deny-by-default.
-- zod schemas for auth/users/roles; apply via withValidation.
-- Tests: auth flow, RBAC policy tests (each permission allowed vs denied — SC-003), unauthorized →
-  401/403, malformed → 400.
-
-NO UI. Leave the full gate green; tick T012–T019; stop.
 ```
 
 ---

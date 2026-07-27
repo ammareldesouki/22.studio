@@ -28,7 +28,7 @@ DRAFT`; `ARCHIVED →restore→ DRAFT`. `publishedAt` set on first `PUBLISHED`.
 ## Operational entities
 
 ### User
-`id`, `name`, `email` (unique), `passwordHash` (argon2), `roleId` → Role, `active` (bool),
+`id`, `name`, `email` (unique), `passwordHash` (bcrypt), `roleId` → Role, `active` (bool),
 timestamps. **Validation**: valid email; password meets strength policy (min length) at set-time.
 
 ### Role

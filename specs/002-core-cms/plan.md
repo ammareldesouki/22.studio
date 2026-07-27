@@ -20,7 +20,7 @@ a standalone API can be extracted later without a rewrite.
 
 **Primary Dependencies**: Next.js 15 route handlers / server actions (`apps/admin`); Prisma 6 +
 PostgreSQL (Supabase); zod (`packages/validation`); `@aws-sdk/client-s3` (Cloudflare R2, S3 API);
-argon2 (password hashing); `jose` (JWT sign/verify); Vitest
+bcryptjs (password hashing); `jose` (JWT sign/verify); Vitest
 
 **Storage**: Supabase Postgres via Prisma. All content models extend the Content Engine base;
 migrations add the full domain schema. Media binaries live in Cloudflare R2 (referenced by URL/key).
@@ -62,7 +62,7 @@ items/list responsive now (SC-008), ~20k scale hardening in Phase 5.
 | XII Accessibility / XIII UX / XIV Dashboard | **No UI this phase** — deferred to the frontend feature after theme planning | ✅ N/A (deferred) |
 | XV Search Everywhere | Deferred → Phase 4 | ✅ N/A this phase |
 | XVI Extensibility | Content Engine base makes new content types cheap; modular core | ✅ PASS |
-| XVII Security | Custom RBAC deny-by-default, hashed passwords (argon2), server-side validation, signed R2 uploads, no secrets, rate-limited auth | ✅ PASS |
+| XVII Security | Custom RBAC deny-by-default, hashed passwords (bcrypt), server-side validation, signed R2 uploads, no secrets, rate-limited auth | ✅ PASS |
 | XVIII Simplicity | Custom-RBAC builder adds complexity (user-chosen, see Complexity Tracking); everything else kept minimal | ⚠️ see Complexity Tracking |
 
 **Gate result**: PASS. Two justified items in Complexity Tracking (custom RBAC; backend-in-Next.js

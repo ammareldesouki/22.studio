@@ -18,7 +18,7 @@ permission catalog) are treated as settled inputs. No open `NEEDS CLARIFICATION`
 
 ## 2. Authentication & sessions
 
-- **Decision**: Email + password login. Passwords hashed with **argon2**. Issue a short-lived
+- **Decision**: Email + password login. Passwords hashed with **bcrypt (bcryptjs)**. Issue a short-lived
   **access JWT** (signed with `jose`) kept in memory, and a long-lived **refresh token** in an
   **httpOnly, Secure, SameSite** cookie; `/auth/refresh` rotates it; logout invalidates it via a
   server-side refresh-token store (revocation list / rotation). Basic **rate limiting** on login.

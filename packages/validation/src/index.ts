@@ -21,36 +21,53 @@ export function validate<T>(schema: z.ZodSchema<T>, input: unknown): ValidationR
 }
 
 /**
- * Wraps a route handler so every request body is JSON-parsed and schema-validated before the
- * handler runs (FR-018: the backend never trusts unvalidated input). Framework-agnostic — uses
- * the web-standard Request/Response, so it works in any Next.js route handler without coupling
- * this package to Next.
+ * Parse + schema-validate a request body, returning either the typed data or a ready 400 Response.
+ * Centralizes the malformed-JSON / validation-failure envelope so both `withValidation` (body-only
+ * routes) and native dynamic-segment handlers (which need Next's `params`) reuse one implementation.
  *
- * - Malformed JSON  → 400 `{ error: 'Invalid JSON', issues: [...] }`
- * - Schema failure  → 400 `{ error: 'Validation failed', issues: [...] }`
- * - Valid           → calls `handler(data, request)`
+ * - Malformed JSON  → `{ ok: false, response: 400 'Invalid JSON' }`
+ * - Schema failure  → `{ ok: false, response: 400 'Validation failed' }`
+ * - Valid           → `{ ok: true, data }`
+ */
+export async function parseAndValidate<T>(
+  schema: z.ZodSchema<T>,
+  request: Request,
+): Promise<{ ok: true; data: T } | { ok: false; response: Response }> {
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return {
+      ok: false,
+      response: Response.json(
+        { error: 'Invalid JSON', issues: [{ path: '', message: 'Request body is not valid JSON' }] },
+        { status: 400 },
+      ),
+    };
+  }
+  const result = validate(schema, body);
+  if (!result.success) {
+    return {
+      ok: false,
+      response: Response.json({ error: 'Validation failed', issues: result.error.issues }, { status: 400 }),
+    };
+  }
+  return { ok: true, data: result.data };
+}
+
+/**
+ * Wraps a body-only route handler so the request body is JSON-parsed and schema-validated before
+ * the handler runs (FR-018). Framework-agnostic (web-standard Request/Response). For dynamic
+ * routes that also need the id, use a native handler with `params` + `parseAndValidate`.
  */
 export function withValidation<T>(
   schema: z.ZodSchema<T>,
   handler: (data: T, request: Request) => Response | Promise<Response>,
 ): (request: Request) => Promise<Response> {
   return async (request: Request): Promise<Response> => {
-    let body: unknown;
-    try {
-      body = await request.json();
-    } catch {
-      return Response.json(
-        { error: 'Invalid JSON', issues: [{ path: '', message: 'Request body is not valid JSON' }] },
-        { status: 400 },
-      );
-    }
-
-    const result = validate(schema, body);
-    if (!result.success) {
-      return Response.json({ error: 'Validation failed', issues: result.error.issues }, { status: 400 });
-    }
-
-    return handler(result.data, request);
+    const parsed = await parseAndValidate(schema, request);
+    if (!parsed.ok) return parsed.response;
+    return handler(parsed.data, request);
   };
 }
 

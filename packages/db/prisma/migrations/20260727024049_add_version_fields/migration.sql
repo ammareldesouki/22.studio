@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Role" ADD COLUMN     "version" INTEGER NOT NULL DEFAULT 1;
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "version" INTEGER NOT NULL DEFAULT 1;

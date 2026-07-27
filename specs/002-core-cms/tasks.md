@@ -25,7 +25,7 @@ thin route handlers in `apps/admin/app/api/*`; Prisma models in `packages/db`; z
 ## Phase 1: Setup (Shared Infrastructure)
 
 - [X] T001 Scaffold `packages/core` (package.json, tsconfig extending config, `src/index.ts`, module subdirs: `content-engine/ auth/ rbac/ users/ roles/ media/ clients/ services/ projects/ homepage/ settings/ shared/`) with `test`/`typecheck`/`lint` scripts + vitest.config
-- [X] T002 [P] Add backend deps: `argon2`, `jose` to `packages/core`; `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` to `packages/core` (R2)
+- [X] T002 [P] Add backend deps: `bcryptjs`, `jose` to `packages/core`; `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` to `packages/core` (R2)
 - [X] T003 [P] Define the fixed **permission catalog** constant + `Permission` type in `packages/types/src/permissions.ts` (projects:create|edit|publish|delete, media:upload|delete, clients:manage, services:manage, homepage:manage, users:manage, roles:manage, settings:manage)
 - [X] T004 [P] Add shared zod base helpers in `packages/validation/src/` (pagination cursor, id, SEO object, `withValidation` already exists)
 
@@ -54,14 +54,14 @@ thin route handlers in `apps/admin/app/api/*`; Prisma models in `packages/db`; z
 **Independent Test**: Create a role + user, log in, confirm permitted actions succeed and
 non-permitted are denied (deny-by-default).
 
-- [ ] T012 [P] [US1] Auth service in `packages/core/src/auth/` — login (argon2 verify), issue access JWT + refresh, refresh rotation + revocation store, logout
-- [ ] T013 [P] [US1] Users service + repository in `packages/core/src/users/` (CRUD, email-unique, set-password, last-owner guard)
-- [ ] T014 [P] [US1] Roles service + repository in `packages/core/src/roles/` (CRUD, permissions ⊆ catalog, immutable owner role, block delete while assigned)
-- [ ] T015 [US1] Auth route handlers in `apps/admin/app/api/auth/{login,refresh,logout}/route.ts` (cookies per contracts/auth.md; rate-limit login)
-- [ ] T016 [US1] Users route handlers in `apps/admin/app/api/users/` (+ `[id]/password`) with `users:manage` guard + validation
-- [ ] T017 [US1] Roles route handlers in `apps/admin/app/api/roles/` + `GET /api/permissions` with `roles:manage` guard
-- [ ] T018 [P] [US1] zod schemas for auth/users/roles in `packages/validation/src/`
-- [ ] T019 [US1] Tests in `packages/core` + `apps/admin/__tests__/` — auth flow, **RBAC policy tests (each permission allowed vs denied, SC-003)**, unauthorized → 401/403
+- [X] T012 [P] [US1] Auth service in `packages/core/src/auth/` — login (bcrypt verify), issue access JWT + refresh, refresh rotation + revocation store, logout
+- [X] T013 [P] [US1] Users service + repository in `packages/core/src/users/` (CRUD, email-unique, set-password, last-owner guard)
+- [X] T014 [P] [US1] Roles service + repository in `packages/core/src/roles/` (CRUD, permissions ⊆ catalog, immutable owner role, block delete while assigned)
+- [X] T015 [US1] Auth route handlers in `apps/admin/app/api/auth/{login,refresh,logout}/route.ts` (cookies per contracts/auth.md; rate-limit login)
+- [X] T016 [US1] Users route handlers in `apps/admin/app/api/users/` (+ `[id]/password`) with `users:manage` guard + validation
+- [X] T017 [US1] Roles route handlers in `apps/admin/app/api/roles/` + `GET /api/permissions` with `roles:manage` guard
+- [X] T018 [P] [US1] zod schemas for auth/users/roles in `packages/validation/src/`
+- [X] T019 [US1] Tests in `packages/core` + `apps/admin/__tests__/` — auth flow, **RBAC policy tests (each permission allowed vs denied, SC-003)**, unauthorized → 401/403
 
 **Checkpoint**: Access control works; every later route can be gated + tested.
 

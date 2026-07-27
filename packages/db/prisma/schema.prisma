@@ -53,6 +53,7 @@ model User {
   roleId       String   @db.Uuid
   role         Role     @relation(fields: [roleId], references: [id])
   active       Boolean  @default(true)
+  version      Int      @default(1)
 
   clientsCreated    Client[]    @relation("clientCreatedBy")
   clientsUpdated    Client[]    @relation("clientUpdatedBy")
@@ -66,6 +67,7 @@ model User {
   testimonialsUpdated       Testimonial[]       @relation("testimonialUpdatedBy")
   pagesCreated       Page[]   @relation("pageCreatedBy")
   pagesUpdated       Page[]   @relation("pageUpdatedBy")
+  refreshTokens      RefreshToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -78,11 +80,26 @@ model Role {
   name        String   @unique
   permissions String[]
   isOwner     Boolean  @default(false)
+  version     Int      @default(1)
 
   users User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model RefreshToken {
+  id          String   @id @default(uuid()) @db.Uuid
+  hashedToken String
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id])
+  expiresAt   DateTime
+  revoked     Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([hashedToken])
 }
 
 model Media {

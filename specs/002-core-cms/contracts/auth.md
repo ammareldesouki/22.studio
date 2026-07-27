@@ -21,4 +21,4 @@ a valid session.
 
 ## Cross-cutting
 - Access JWT is short-lived, sent as `Authorization: Bearer <token>` on subsequent calls.
-- Passwords hashed with argon2; never returned. Maps to FR-004, FR-006, FR-007; SC-003.
+- Passwords hashed with bcrypt; never returned. Maps to FR-004, FR-006, FR-007; SC-003.

@@ -1,3 +1,4 @@
+import './load-env'; // MUST be first: loads repo-root .env before the Prisma client reads DATABASE_URL
 import { db } from './client';
 import { ALL_PERMISSIONS } from '@studioflow/types';
 
@@ -26,12 +27,13 @@ async function main() {
     );
   }
 
-  const { hash } = await import('argon2');
-  const passwordHash = await hash(ownerPassword);
+  const { default: bcrypt } = await import('bcryptjs');
+  const passwordHash = await bcrypt.hash(ownerPassword, 12);
 
   const ownerUser = await db.user.upsert({
     where: { email: ownerEmail },
-    update: { roleId: ownerRole.id, active: true },
+    // Refresh the hash on re-seed too, so rotating OWNER_PASSWORD (or changing the hasher) applies.
+    update: { roleId: ownerRole.id, active: true, passwordHash },
     create: {
       name: 'Studio Owner',
       email: ownerEmail,

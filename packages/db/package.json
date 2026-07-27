@@ -20,10 +20,11 @@
   "dependencies": {
     "@prisma/client": "^6.0.0",
     "@studioflow/types": "workspace:^",
-    "argon2": "^0.41.0"
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
     "@studioflow/config": "workspace:*",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.0.0",
     "prisma": "^6.0.0",
     "tsx": "^4.23.1",
