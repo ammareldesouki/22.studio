@@ -25,3 +25,22 @@ export const seoSchema = z
 
 /** Version field for optimistic concurrency (FR-025). */
 export const versionSchema = z.number().int().positive();
+
+// FR-019 / SC-006: CMS content is plain text — no raw-HTML editing path anywhere.
+// Reject anything that looks like a tag, script, inline handler, javascript: URL, or
+// HTML entity so a payload can never be stored and later rendered on the public site.
+const HTML_RE = /<\s*\/?\s*[a-z!][^>]*>|<\s*script|javascript:|on\w+\s*=|&#?[a-z0-9]+;/i;
+
+/** A bounded plain-text string that rejects raw HTML / scripts. */
+export const htmlSafe = (max: number) =>
+  z
+    .string()
+    .max(max)
+    .refine((s) => !HTML_RE.test(s), { message: 'must not contain HTML or scripts' });
+
+/** A URL restricted to http(s) — rejects javascript:, data:, and other script-capable schemes. */
+export const httpUrl = () =>
+  z
+    .string()
+    .url()
+    .refine((u) => /^https?:\/\//i.test(u), { message: 'must be an http(s) URL' });

@@ -96,23 +96,7 @@ NO UI. Full gate green; tick T033–T036; stop.
 
 ---
 
-## Phase G — US6: Settings (T037–T040)
-
-```
-Read AGENTS.md and specs/002-core-cms/{spec.md,tasks.md,data-model.md} and
-specs/002-core-cms/contracts/homepage-settings.md. Requires Phase A.
-Implement ONLY Phase 8 / User Story 6 (T037–T040).
-
-- packages/core/settings: singleton get/update (siteName, logoId, socialLinks, seoDefaults,
-  analyticsIds, contact) with version.
-- apps/admin route handlers: /api/settings guarded by settings:manage.
-- zod settings schema.
-- Tests: persist/read all fields; concurrent edit → 409.
-
-NO UI. Full gate green; tick T037–T040; stop.
-```
-
----
+##
 
 ## Phase H — Polish (T041–T046)
 

@@ -1,21 +1,5 @@
 import { z } from 'zod';
-
-// FR-019 / SC-006: section config is plain text — never raw HTML. Reject anything that
-// looks like a tag, script, inline handler, javascript: URL, or HTML entity so a payload
-// can never be stored and later rendered on the public homepage (stored XSS).
-const HTML_RE = /<\s*\/?\s*[a-z!][^>]*>|<\s*script|javascript:|on\w+\s*=|&#?[a-z0-9]+;/i;
-const safe = (max: number) =>
-  z
-    .string()
-    .max(max)
-    .refine((s) => !HTML_RE.test(s), { message: 'must not contain HTML or scripts' });
-
-// Links must be http(s) — reject javascript:, data:, and other script-capable schemes.
-const safeUrl = () =>
-  z
-    .string()
-    .url()
-    .refine((u) => /^https?:\/\//i.test(u), { message: 'must be an http(s) URL' });
+import { htmlSafe as safe, httpUrl as safeUrl } from './shared';
 
 const heroConfig = z.object({
   headline: safe(200),

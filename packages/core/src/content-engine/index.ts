@@ -164,6 +164,9 @@ export class ContentEngineError extends Error {
   constructor(
     message: string,
     public readonly code: string,
+    // Version conflicts and invalid transitions are both Conflicts. Carrying a statusCode
+    // lets a shared route error-mapper turn this into a 409 instead of a raw 500.
+    public readonly statusCode = 409,
   ) {
     super(message);
     this.name = 'ContentEngineError';

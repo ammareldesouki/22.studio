@@ -137,10 +137,10 @@ referenced one → blocked, archive works.
 
 **Independent Test**: Edit each field; read back updated values; concurrent edit → 409.
 
-- [ ] T037 [P] [US6] Settings service/repository in `packages/core/src/settings/` (singleton get/update)
-- [ ] T038 [US6] Settings route handlers in `apps/admin/app/api/settings/` guarded by `settings:manage`
-- [ ] T039 [P] [US6] zod settings schema in `packages/validation/src/`
-- [ ] T040 [US6] Tests — persist/read all fields, optimistic-concurrency 409
+- [X] T037 [P] [US6] Settings service/repository in `packages/core/src/settings/` (singleton get/update)
+- [X] T038 [US6] Settings route handlers in `apps/admin/app/api/settings/` guarded by `settings:manage`
+- [X] T039 [P] [US6] zod settings schema in `packages/validation/src/`
+- [X] T040 [US6] Tests — persist/read all fields, optimistic-concurrency 409
 
 **Checkpoint**: Global config manageable.
 
