@@ -17,6 +17,7 @@
     "./projects": "./src/projects/index.ts",
     "./homepage": "./src/homepage/index.ts",
     "./settings": "./src/settings/index.ts",
+    "./public": "./src/public/index.ts",
     "./shared": "./src/shared/index.ts",
     "./auth/store": "./src/auth/store.ts"
   },
