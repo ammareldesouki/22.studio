@@ -1,0 +1,63 @@
+import { getTranslations } from 'next-intl/server';
+import { Link } from '../app/i18n/navigation';
+import { Logo } from './nav';
+
+export async function Footer() {
+  const t = await getTranslations('footer');
+  const n = await getTranslations('nav');
+
+  return (
+    <footer className="relative z-[2] border-t border-line bg-ink-deep py-[clamp(56px,7vw,90px)]">
+      <div className="wrap">
+        <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr_1.4fr]">
+          <div>
+            <Logo />
+            <p className="mt-5 max-w-[30ch] text-sm text-muted">{t('tagline')}</p>
+          </div>
+
+          <div>
+            <h5 className="label mb-4">{t('studio')}</h5>
+            <FLink href="/work">{n('work')}</FLink>
+            <FLink href="/services">{n('services')}</FLink>
+            <FLink href="/clients">{n('clients')}</FLink>
+            <FLink href="/about">{n('about')}</FLink>
+          </div>
+
+          <div>
+            <h5 className="label mb-4">{t('social')}</h5>
+            <FExt href="https://instagram.com/22studi">Instagram</FExt>
+            <FExt href="https://tiktok.com/@_22studio">TikTok</FExt>
+            <FExt href="https://vimeo.com/real22studio">Vimeo</FExt>
+          </div>
+
+          <div>
+            <h5 className="label mb-4">{t('startProject')}</h5>
+            <FExt href="mailto:real22studio@gmail.com">real22studio@gmail.com</FExt>
+            <FExt href="tel:+201080615075">+20 108 061 5075</FExt>
+          </div>
+        </div>
+
+        <div className="mt-[clamp(48px,6vw,80px)] flex flex-wrap justify-between gap-3 border-t border-line pt-6 text-[13px] text-muted">
+          <span className="label !text-muted">{t('rights')}</span>
+          <span className="label !text-muted">{t('services')}</span>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function FLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link href={href} className="block py-1.5 text-[15px] text-[#ededec] transition-colors hover:text-red" data-cursor>
+      {children}
+    </Link>
+  );
+}
+
+function FExt({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a href={href} className="block py-1.5 text-[15px] text-[#ededec] transition-colors hover:text-red" data-cursor>
+      {children}
+    </a>
+  );
+}

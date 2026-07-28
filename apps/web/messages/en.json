@@ -1,0 +1,146 @@
+{
+  "nav": {
+    "work": "Work",
+    "services": "Services",
+    "clients": "Clients",
+    "about": "About",
+    "contact": "Contact",
+    "menu": "Menu",
+    "close": "Close",
+    "startProject": "Start your project"
+  },
+  "hero": {
+    "eyebrow": "Creative Video Studio — Editing · AI Visuals · Creative Direction",
+    "title": "Your story deserves a video that hits.",
+    "sub": "We turn your brief into content people cannot scroll past.",
+    "cta": "Start your project",
+    "watch": "Watch the before / after",
+    "scroll": "Scroll"
+  },
+  "sections": {
+    "trustedTitle": "Trusted by 100+ brands & creators",
+    "trustedHeading": "Pick a brand. See what we made.",
+    "workEyebrow": "Selected work",
+    "workHeading": "Edits that earned the scroll.",
+    "showreelTag": "Showreel — 2026",
+    "baEyebrow": "The 22 difference",
+    "baHeading": "Drag it. Raw on the left, our cut on the right.",
+    "raw": "Raw",
+    "edited": "Edited",
+    "servicesEyebrow": "What we do",
+    "servicesHeading": "Three ways we make you unscrollable.",
+    "processEyebrow": "How it works",
+    "processHeading": "Brief to banger, five steps.",
+    "statsEyebrow": "By the numbers",
+    "statsHeading": "The work adds up.",
+    "testimonialsEyebrow": "Proof",
+    "testimonialsHeading": "The results speak first.",
+    "faqEyebrow": "Good to know",
+    "faqHeading": "Questions, answered.",
+    "ctaEyebrow": "Now it's your turn",
+    "ctaHeading": "Ready to create something remarkable?",
+    "ctaPrimary": "Start your project",
+    "ctaSecondary": "View work"
+  },
+  "process": {
+    "items": [
+      { "t": "Discover", "d": "We learn the goal, the audience, the win." },
+      { "t": "Strategy", "d": "The angle and hook, decided before we cut." },
+      { "t": "Production", "d": "Footage, AI visuals, assets — sourced or shot." },
+      { "t": "Editing", "d": "The craft: pacing, sound, grade, motion." },
+      { "t": "Delivery", "d": "Every cut and aspect ratio your channels need." }
+    ]
+  },
+  "stats": {
+    "items": [
+      { "value": "120", "suffix": "+", "label": "Projects delivered" },
+      { "value": "100", "suffix": "+", "label": "Brands & creators" },
+      { "value": "40", "suffix": "M+", "label": "Views generated" },
+      { "value": "12", "suffix": "", "label": "Countries" },
+      { "value": "5", "suffix": "", "label": "Years cutting" }
+    ]
+  },
+  "faq": {
+    "items": [
+      { "q": "How fast can you turn around a video?", "a": "Most edits ship in 3–7 days. AI-driven spots can move faster; complex campaigns get a schedule up front so you always know the delivery date." },
+      { "q": "Do you work with creators as well as brands?", "a": "Both. Brands come to us for more sales; creators come to us for more clients. Same craft, tuned to your goal." },
+      { "q": "What do you need from me to start?", "a": "A brief and any footage or references you have. If you don't have footage, our AI Visuals and Creative Direction cover it end to end." },
+      { "q": "Which platforms do you deliver for?", "a": "Every cut and aspect ratio your channels need — Reels, TikTok, YouTube, ads, and long-form — delivered ready to post." }
+    ]
+  },
+  "footer": {
+    "tagline": "We help brands get more sales and creators get more clients — through creative video, always.",
+    "studio": "Studio",
+    "social": "Social",
+    "startProject": "Start a project",
+    "rights": "© 2026 22 Studio — Creative Video Studio",
+    "services": "Editing · AI Visuals · Creative Direction"
+  },
+  "work": {
+    "title": "Work",
+    "heading": "Selected work",
+    "sub": "Case studies, not a gallery.",
+    "loadMore": "Load more",
+    "empty": "No work published yet — check back soon."
+  },
+  "project": {
+    "overview": "Overview",
+    "challenge": "Challenge",
+    "solution": "Solution",
+    "results": "Results",
+    "related": "Related work",
+    "next": "Next project",
+    "client": "Client",
+    "year": "Year",
+    "services": "Services",
+    "role": "Role",
+    "notFound": "That project doesn't exist.",
+    "backToWork": "Back to work"
+  },
+  "services": {
+    "title": "Services",
+    "heading": "Three ways we make you unscrollable.",
+    "sub": "Dynamic — more services on the way.",
+    "projectCount": "{count} projects",
+    "included": "What's included",
+    "relatedWork": "Selected work"
+  },
+  "clients": {
+    "title": "Clients",
+    "heading": "Trusted by 100+ brands & creators.",
+    "sub": "The brands who put their story in our hands.",
+    "visit": "Visit site",
+    "theirWork": "Work for {name}"
+  },
+  "about": {
+    "title": "About",
+    "heading": "We make video that moves markets.",
+    "mission": "Mission",
+    "missionBody": "We create high-performing videos that drive real business results — more sales for brands and more clients for creators.",
+    "vision": "Vision",
+    "visionBody": "To be the creative studio that turns every brief into content that converts — whether the goal is sales, growth, or brand recognition.",
+    "values": "Core values"
+  },
+  "contact": {
+    "title": "Contact",
+    "eyebrow": "Now it's your turn",
+    "heading": "Ready to create something remarkable?",
+    "sub": "Tell us about your project and we'll be in touch.",
+    "name": "Your name",
+    "email": "Email",
+    "message": "Tell us about your project",
+    "send": "Send message",
+    "sending": "Sending…",
+    "sent": "Message sent — we'll be in touch.",
+    "error": "Something went wrong. Please try again.",
+    "or": "Or reach us directly"
+  },
+  "common": {
+    "viewCase": "View case",
+    "view": "View",
+    "play": "Play",
+    "switchLang": "العربية",
+    "notFound": "This cut doesn't exist.",
+    "backHome": "Back to home"
+  }
+}

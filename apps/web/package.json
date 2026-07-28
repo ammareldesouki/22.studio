@@ -15,7 +15,14 @@
     "react-dom": "^19.0.0",
     "@studioflow/shared": "workspace:*",
     "@studioflow/types": "workspace:*",
-    "@studioflow/ui": "workspace:*"
+    "@studioflow/ui": "workspace:*",
+    "@studioflow/core": "workspace:*",
+    "@studioflow/db": "workspace:*",
+    "@studioflow/validation": "workspace:*",
+    "framer-motion": "^11.11.0",
+    "lenis": "^1.1.14",
+    "next-intl": "^3.25.0",
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "@studioflow/config": "workspace:*",
