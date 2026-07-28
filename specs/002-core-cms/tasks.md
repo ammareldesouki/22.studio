@@ -122,10 +122,10 @@ referenced one → blocked, archive works.
 
 **Independent Test**: Toggle/reorder/configure sections; confirm config persists and no raw-HTML path.
 
-- [ ] T033 [P] [US5] Homepage service/repository in `packages/core/src/homepage/` (section catalog, enable/disable/reorder, per-type config)
-- [ ] T034 [US5] Homepage route handlers in `apps/admin/app/api/homepage/` (sections, reorder) guarded by `homepage:manage`
-- [ ] T035 [P] [US5] zod per-section-type config schemas (bounded; reject raw HTML) in `packages/validation/src/`
-- [ ] T036 [US5] Tests — enable/disable/reorder/config persists; raw-HTML rejected (FR-019, SC-006)
+- [X] T033 [P] [US5] Homepage service/repository in `packages/core/src/homepage/` (section catalog, enable/disable/reorder, per-type config)
+- [X] T034 [US5] Homepage route handlers in `apps/admin/app/api/homepage/` (sections, reorder) guarded by `homepage:manage`
+- [X] T035 [P] [US5] zod per-section-type config schemas (bounded; reject raw HTML) in `packages/validation/src/`
+- [X] T036 [US5] Tests — enable/disable/reorder/config persists; raw-HTML rejected (FR-019, SC-006)
 
 **Checkpoint**: Homepage owner-composable.
 

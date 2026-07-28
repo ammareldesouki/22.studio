@@ -13,6 +13,7 @@
     "./projects": "./src/projects.ts",
     "./clients": "./src/clients.ts",
     "./services": "./src/services.ts",
+    "./homepage": "./src/homepage.ts",
     "./shared": "./src/shared.ts"
   },
   "scripts": {
