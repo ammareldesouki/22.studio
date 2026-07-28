@@ -35,6 +35,9 @@ dist/
 build/
 out/
 lib/
+# apps/admin/lib is source (session/media guards imported by every route), not build output.
+!apps/admin/lib/
+!apps/admin/lib/**
 *.tsbuildinfo
 next-env.d.ts
 
