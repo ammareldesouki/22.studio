@@ -21,6 +21,7 @@ export function ContactForm() {
           name: fd.get('name'),
           email: fd.get('email'),
           message: fd.get('message'),
+          company: fd.get('company'),
           locale,
         }),
       });
@@ -41,6 +42,13 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex max-w-xl flex-col gap-6">
+      <input
+        name="company"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="pointer-events-none absolute left-[-9999px] h-0 w-0 opacity-0"
+      />
       <input name="name" required maxLength={200} placeholder={t('name')} className="input" />
       <input name="email" type="email" required placeholder={t('email')} className="input" />
       <textarea name="message" required rows={5} maxLength={2000} placeholder={t('message')} className="input resize-none" />

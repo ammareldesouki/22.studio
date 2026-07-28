@@ -32,6 +32,11 @@ export function Nav({ locale }: { locale: string }) {
   const [stuck, setStuck] = useState(false);
   const other = locale === 'ar' ? 'en' : 'ar';
 
+  // Content slugs differ per locale, so switching language on a detail page (e.g.
+  // /work/<slug>) would 404. Fall back to that section's list in the other locale.
+  const parts = pathname.split('/').filter(Boolean);
+  const localizedTarget = parts.length >= 2 && ['work', 'services', 'clients'].includes(parts[0]!) ? `/${parts[0]}` : pathname;
+
   useEffect(() => {
     const onScroll = () => setStuck(window.scrollY > 40);
     onScroll();
@@ -56,7 +61,7 @@ export function Nav({ locale }: { locale: string }) {
         <div className={`wrap flex items-center justify-between transition-[padding] duration-500 ${stuck ? 'py-3.5' : 'py-5'}`}>
           <Logo />
           <div className="flex items-center gap-7">
-            <Link href={pathname} locale={other} className="label !text-white/90" data-cursor>
+            <Link href={localizedTarget} locale={other} className="label !text-white/90" data-cursor>
               {tc('switchLang')}
             </Link>
             <button

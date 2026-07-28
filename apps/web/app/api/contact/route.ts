@@ -7,6 +7,7 @@ const schema = z.object({
   email: z.string().email(),
   message: z.string().min(1).max(2000),
   locale: z.string().max(5).optional(),
+  company: z.string().optional(), // honeypot — real users leave it empty
 });
 
 export async function POST(request: Request): Promise<Response> {
@@ -19,6 +20,10 @@ export async function POST(request: Request): Promise<Response> {
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
     return Response.json({ error: 'Validation failed' }, { status: 400 });
+  }
+  // Honeypot tripped → looks like a bot. Pretend success, persist nothing.
+  if (parsed.data.company && parsed.data.company.trim() !== '') {
+    return Response.json({ ok: true }, { status: 201 });
   }
   await db.message.create({
     data: {
