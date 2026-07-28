@@ -11,6 +11,7 @@ vi.mock('@studioflow/db', () => ({
       update: vi.fn(),
       updateMany: vi.fn(),
       delete: vi.fn(),
+      deleteMany: vi.fn(),
       count: vi.fn(),
     },
     folder: {
@@ -216,5 +217,31 @@ describe('FolderService', () => {
       vi.mocked(db.media.count).mockResolvedValueOnce(3);
       await expect(folderService.delete('f1')).rejects.toThrow('Cannot delete folder with media');
     });
+  });
+});
+
+describe('MediaService cleanup', () => {
+  it('deletes the R2 object and the DB row for stale unconfirmed media', async () => {
+    vi.mocked(db.media.findMany).mockResolvedValueOnce([
+      { id: 'm1', r2Key: 'uploads/a/x.jpg' },
+      { id: 'm2', r2Key: 'uploads/b/y.jpg' },
+    ] as never);
+    vi.mocked(db.media.deleteMany).mockResolvedValueOnce({ count: 2 });
+    const count = await mediaService.cleanupUnconfirmed(86_400_000);
+    expect(count).toBe(2);
+    // Only stale/unconfirmed rows are queried…
+    expect(db.media.findMany).toHaveBeenCalledWith({
+      where: { confirmed: false, createdAt: { lt: expect.any(Date) } },
+      select: { id: true, r2Key: true },
+    });
+    // …and the DB purge targets exactly those ids (after R2 delete).
+    expect(db.media.deleteMany).toHaveBeenCalledWith({ where: { id: { in: ['m1', 'm2'] } } });
+  });
+
+  it('does nothing when there are no stale rows', async () => {
+    vi.mocked(db.media.findMany).mockResolvedValueOnce([] as never);
+    const count = await mediaService.cleanupUnconfirmed();
+    expect(count).toBe(0);
+    expect(db.media.deleteMany).not.toHaveBeenCalled();
   });
 });

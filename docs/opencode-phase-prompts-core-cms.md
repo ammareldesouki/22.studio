@@ -98,26 +98,7 @@ NO UI. Full gate green; tick T033–T036; stop.
 
 ##
 
-## Phase H — Polish (T041–T046)
-
-```
-Read AGENTS.md and specs/002-core-cms/{tasks.md,quickstart.md}.
-Implement ONLY Phase 9 (T041–T046).
-
-- MVP end-to-end integration test (SC-001): login → upload media → create client + service → build a
-  project referencing them → publish.
-- Rate limiting on /api/auth/login.
-- Cleanup of expired unconfirmed media upload-intents (no orphan rows).
-- Extend .github/workflows/ci.yml so migrations + all new module tests run against the Postgres
-  service container.
-- Run quickstart.md scenarios A–I and record results.
-- Verify NO UI shipped, no raw-HTML path, no secrets; full gate green.
-
-Tick T041–T046; stop.
-```
-
----
-
+## 
 ## The loop, per phase
 1. Paste the phase prompt into OpenCode + DeepSeek → it implements + self-verifies.
 2. Return to Claude Code → `/code-review`, `/verify`, `/speckit-analyze` against the spec.

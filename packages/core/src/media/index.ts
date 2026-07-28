@@ -224,6 +224,40 @@ export class MediaService {
     return db.media.findUniqueOrThrow({ where: { id } });
   }
 
+  /**
+   * Remove media that were created (upload-intent) but never confirmed after `maxAgeMs`.
+   * Deletes the R2 object first (a file may have been uploaded but never confirmed) and then
+   * the DB row, so neither storage nor the table accumulates orphans.
+   */
+  async cleanupUnconfirmed(maxAgeMs = 24 * 60 * 60 * 1000): Promise<number> {
+    const cutoff = new Date(Date.now() - maxAgeMs);
+    const stale = await db.media.findMany({
+      where: { confirmed: false, createdAt: { lt: cutoff } },
+      select: { id: true, r2Key: true },
+    });
+    if (stale.length === 0) return 0;
+
+    // Best-effort R2 cleanup — never let a storage error block the DB purge.
+    let client: S3Client | null = null;
+    try {
+      client = getR2Client();
+    } catch {
+      client = null;
+    }
+    if (client) {
+      for (const m of stale) {
+        try {
+          await client.send(new DeleteObjectCommand({ Bucket: getBucket(), Key: m.r2Key }));
+        } catch {
+          // ignore individual R2 failures
+        }
+      }
+    }
+
+    const { count } = await db.media.deleteMany({ where: { id: { in: stale.map((m) => m.id) } } });
+    return count;
+  }
+
   async delete(id: string): Promise<void> {
     const media = await db.media.findUnique({ where: { id }, select: { id: true, usageCount: true, r2Key: true } });
     if (!media) throw new MediaError('Media not found', 'NOT_FOUND', 404);

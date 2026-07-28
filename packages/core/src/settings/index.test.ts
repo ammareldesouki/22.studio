@@ -43,7 +43,9 @@ describe('SettingsService', () => {
       const result = await settingsService.get();
       expect(result.siteName).toBe('Studio');
       expect(db.settings.upsert).toHaveBeenCalledOnce();
-      const arg = vi.mocked(db.settings.upsert).mock.calls[0]![0] as { where: { id: string } };
+      const call = vi.mocked(db.settings.upsert).mock.calls[0];
+      if (!call) throw new Error('No call recorded');
+      const arg = call[0] as { where: { id: string } };
       expect(arg.where.id).toBe('00000000-0000-0000-0000-000000000001');
     });
   });

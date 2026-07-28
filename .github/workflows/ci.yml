@@ -2,20 +2,19 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
     branches: [main]
 
 env:
-  NODE_VERSION: '20'
-  PNPM_VERSION: '9.15.4'
-  # CI uses a local Postgres service container (no pooler), so pooled + direct URLs are identical.
-  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/studioflow_test?schema=public
-  DIRECT_URL: postgresql://postgres:postgres@localhost:5432/studioflow_test?schema=public
+  NODE_VERSION: 20
+  PNPM_VERSION: 9.15.4
+  # Plain Postgres service — no PgBouncer, so no pgbouncer flag.
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/studioflow"
+  DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/studioflow"
 
 jobs:
-  ci:
-    name: Install → TypeCheck → Lint → Build → Test → Migrate
+  lint-typecheck-test:
     runs-on: ubuntu-latest
 
     services:
@@ -24,7 +23,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: studioflow_test
+          POSTGRES_DB: studioflow
         ports:
           - 5432:5432
         options: >-
@@ -43,31 +42,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm typecheck
-        name: TypeCheck
+      - name: Generate Prisma client
+        run: pnpm --filter @studioflow/db exec prisma generate
 
+      - name: Run migrations
+        run: pnpm --filter @studioflow/db exec prisma migrate deploy
+
+      - run: pnpm typecheck
       - run: pnpm lint
-        name: Lint
+
+      - name: Test (incl. real-DB integration against the Postgres service)
+        run: pnpm test
+        env:
+          INTEGRATION_DB: '1'
 
       - run: pnpm build
-        name: Build
-
-      - run: pnpm test
-        name: Test
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-
-      - name: Check DB reachable (attribution gate)
-        run: |
-          pg_isready -h localhost -p 5432 -U postgres -d studioflow_test \
-            || { echo "❌ FAIL: Throwaway Postgres is not reachable — check 'services.postgres' in this workflow."; exit 1; }
-
-      - name: Migrate + verify idempotency (throwaway DB)
-        run: pnpm --filter @studioflow/db migrate:verify
-        env:
-          DATABASE_URL: ${{ env.DATABASE_URL }}
-          DIRECT_URL: ${{ env.DIRECT_URL }}

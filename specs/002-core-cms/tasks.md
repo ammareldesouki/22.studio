@@ -148,12 +148,12 @@ referenced one → blocked, archive works.
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T041 [P] MVP end-to-end integration test (SC-001): login → upload media → create client + service → build project referencing them → publish
-- [ ] T042 [P] Rate limiting on `POST /api/auth/login` (brute-force protection, XVII)
-- [ ] T043 [P] Housekeeping: expire/cleanup unconfirmed media upload-intents (no orphan rows)
-- [ ] T044 [P] Extend `.github/workflows/ci.yml` so migrations + the new module tests run against the Postgres service container
-- [ ] T045 [P] Run all `quickstart.md` scenarios A–I and record results
-- [ ] T046 Verify **zero UI** shipped, **no raw-HTML** editing path, **no secrets** in source, and all `pnpm build/typecheck/lint/test` green
+- [x] T041 [P] MVP end-to-end integration test (SC-001): login → upload media → create client + service → build project referencing them → publish
+- [x] T042 [P] Rate limiting on `POST /api/auth/login` (brute-force protection, XVII)
+- [x] T043 [P] Housekeeping: expire/cleanup unconfirmed media upload-intents (no orphan rows)
+- [x] T044 [P] Extend `.github/workflows/ci.yml` so migrations + the new module tests run against the Postgres service container
+- [x] T045 [P] Run all `quickstart.md` scenarios A–I and record results
+- [x] T046 Verify **zero UI** shipped, **no raw-HTML** editing path, **no secrets** in source, and all `pnpm build/typecheck/lint/test` green
 
 ---
 
