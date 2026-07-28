@@ -423,3 +423,17 @@ model RelatedProject {
 
   @@id([projectId, relatedProjectId])
 }
+
+// Public contact enquiries captured from the marketing site (FR-021).
+model Message {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  email     String
+  message   String
+  locale    String   @default("en")
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([handled])
+  @@index([createdAt])
+}
