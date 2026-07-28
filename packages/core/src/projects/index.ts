@@ -144,7 +144,7 @@ async function assertRefsExist(opts: {
   serviceIds?: string[];
   relatedIds?: string[];
 }): Promise<void> {
-  const checks: Array<[string[], () => Promise<{ id: string }[]>, string]> = [
+  const checks: [string[], () => Promise<{ id: string }[]>, string][] = [
     [opts.mediaIds ?? [], () => db.media.findMany({ where: { id: { in: opts.mediaIds } }, select: { id: true } }), 'media'],
     [opts.serviceIds ?? [], () => db.service.findMany({ where: { id: { in: opts.serviceIds } }, select: { id: true } }), 'service'],
     [opts.relatedIds ?? [], () => db.project.findMany({ where: { id: { in: opts.relatedIds } }, select: { id: true } }), 'related project'],

@@ -3,6 +3,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'node:crypto';
 import { db } from '@studioflow/db';
 import { DEFAULT_PAGE_LIMIT, MAX_PAGE_LIMIT } from '@studioflow/types';
+import { isForeignKeyViolation } from '@studioflow/core/content-engine';
 
 // ── R2 client (lazy singleton) ────────────────────────────────────────────
 
@@ -244,7 +245,21 @@ export class MediaService {
       // Best-effort deletion from R2; row deletion still proceeds.
     }
 
-    await db.media.delete({ where: { id } });
+    try {
+      await db.media.delete({ where: { id } });
+    } catch (e) {
+      // usageCount only tracks project references; media used as a client logo,
+      // service icon, or site logo is guarded by an ON DELETE RESTRICT FK instead.
+      // Surface that as a clean 409, not a raw 500.
+      if (isForeignKeyViolation(e)) {
+        throw new MediaError(
+          'Cannot delete media — it is referenced by a logo, icon, or other entity',
+          'IN_USE',
+          409,
+        );
+      }
+      throw e;
+    }
   }
 }
 

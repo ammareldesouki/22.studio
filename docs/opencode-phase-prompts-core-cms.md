@@ -77,28 +77,7 @@ NO UI. Full gate green; tick T024–T027; stop.
 
 ---
 
-## Phase E — US4: Clients & Services (T028–T032)
-
-```
-Read AGENTS.md and specs/002-core-cms/{spec.md,tasks.md,data-model.md} and
-specs/002-core-cms/contracts/clients-services.md. Requires Phase A.
-Implement ONLY Phase 6 / User Story 4 (T028–T032).
-
-- packages/core: clients (CRUD, order, archive-not-delete-when-referenced), services + subservices.
-- apps/admin route handlers: /api/clients and /api/services (+reorder, +status, +subservices) guarded
-  by clients:manage / services:manage.
-- zod schemas for clients/services.
-- SCHEMA MIGRATION (deferred from Phase A per data-model.md): add explicit `onDelete: Restrict` to
-  referenced relations (Project.client, *.logo/iconMedia, ProjectMedia.media, ProjectService.service)
-  and `onDelete: Cascade` to join-row parents (ProjectMedia.project, ProjectService.project,
-  RelatedProject.*); generate + apply the migration.
-- Tests: create/reorder, reference from a project, hard-delete-while-referenced → 409, archive succeeds.
-
-NO UI. Full gate green; tick T028–T032; stop.
-```
-
----
-
+## 
 ## Phase F — US5: Homepage (T033–T036)
 
 ```

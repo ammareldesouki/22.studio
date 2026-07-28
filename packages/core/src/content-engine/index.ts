@@ -84,6 +84,15 @@ export function isUniqueViolation(e: unknown): boolean {
 }
 
 /**
+ * True when the error is a Prisma foreign-key constraint violation (P2003).
+ * Duck-typed on `.code` so it recognises both real Prisma errors and errors
+ * re-thrown across module/serialization boundaries.
+ */
+export function isForeignKeyViolation(e: unknown): boolean {
+  return typeof e === 'object' && e !== null && 'code' in e && (e as { code?: unknown }).code === 'P2003';
+}
+
+/**
  * Race-safe create: runs `attempt(slug)`; if it hits a unique-slug violation,
  * retries with `-2`, `-3`, … up to `maxRetries` (FR-003 under concurrency).
  */

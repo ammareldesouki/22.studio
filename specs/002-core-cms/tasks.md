@@ -106,11 +106,11 @@ duplicate title auto-suffixes slug; concurrent edit → 409.
 **Independent Test**: Create/reorder clients & services, reference from a project; hard-delete a
 referenced one → blocked, archive works.
 
-- [ ] T028 [P] [US4] Clients service/repository in `packages/core/src/clients/` (CRUD, order, archive-not-delete when referenced)
-- [ ] T029 [P] [US4] Services + SubServices service/repository in `packages/core/src/services/`
-- [ ] T030 [US4] Clients + Services route handlers in `apps/admin/app/api/clients/` and `.../services/` (+ reorder, + status, + subservices) per contracts/clients-services.md
-- [ ] T031 [P] [US4] zod schemas for clients/services in `packages/validation/src/`
-- [ ] T032 [US4] Tests — create/reorder, reference from project, **hard-delete-while-referenced 409** + archive succeeds
+- [X] T028 [P] [US4] Clients service/repository in `packages/core/src/clients/` (CRUD, order, archive-not-delete when referenced)
+- [X] T029 [P] [US4] Services + SubServices service/repository in `packages/core/src/services/`
+- [X] T030 [US4] Clients + Services route handlers in `apps/admin/app/api/clients/` and `.../services/` (+ reorder, + status, + subservices) per contracts/clients-services.md
+- [X] T031 [P] [US4] zod schemas for clients/services in `packages/validation/src/`
+- [X] T032 [US4] Tests — create/reorder, reference from project, **hard-delete-while-referenced 409** + archive succeeds
 
 **Checkpoint**: Projects can be fully attributed.
 

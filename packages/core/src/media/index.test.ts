@@ -191,6 +191,13 @@ describe('MediaService', () => {
       await mediaService.delete('m1');
       expect(db.media.delete).toHaveBeenCalledWith({ where: { id: 'm1' } });
     });
+
+    it('maps a restrict-FK violation (logo/icon ref) to 409, not 500', async () => {
+      vi.mocked(db.media.findUnique).mockResolvedValueOnce({ id: 'm1', usageCount: 0, r2Key: 'key' } as never);
+      const fkError = Object.assign(new Error('FK violation'), { code: 'P2003' });
+      vi.mocked(db.media.delete).mockRejectedValueOnce(fkError);
+      await expect(mediaService.delete('m1')).rejects.toMatchObject({ statusCode: 409, code: 'IN_USE' });
+    });
   });
 });
 

@@ -11,6 +11,8 @@
     "./roles": "./src/roles.ts",
     "./media": "./src/media.ts",
     "./projects": "./src/projects.ts",
+    "./clients": "./src/clients.ts",
+    "./services": "./src/services.ts",
     "./shared": "./src/shared.ts"
   },
   "scripts": {
