@@ -1,6 +1,7 @@
 import { signAccessToken, hashToken, generateRefreshToken, refreshTokenExpiry } from '@studioflow/core/auth';
 import { refreshTokenStore } from '@studioflow/core/auth/store';
 import { usersService } from '@studioflow/core/users';
+import { AUTH_COOKIE_PATH } from '../../../../lib/base-path';
 
 export async function POST(request: Request): Promise<Response> {
   const cookieHeader = request.headers.get('Cookie') ?? '';
@@ -37,7 +38,7 @@ export async function POST(request: Request): Promise<Response> {
   const headers = new Headers();
   headers.append(
     'Set-Cookie',
-    `refresh_token=${newRawToken}; HttpOnly; Secure; SameSite=Lax; Path=/api/auth; Max-Age=${7 * 86400}`,
+    `refresh_token=${newRawToken}; HttpOnly; Secure; SameSite=Lax; Path=${AUTH_COOKIE_PATH}; Max-Age=${7 * 86400}`,
   );
 
   return Response.json({ accessToken }, { status: 200, headers });

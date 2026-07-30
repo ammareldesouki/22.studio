@@ -23,6 +23,17 @@ const nextConfig: NextConfig = {
     '@studioflow/validation',
   ],
   serverExternalPackages: ['@prisma/client', '.prisma/client'],
+  // Multi-Zones: serve the admin CMS under /admin on this same domain by proxying to the
+  // admin deployment. Set ADMIN_URL to the admin app's URL (e.g. https://22studio-admin.vercel.app,
+  // or http://localhost:3001 in dev). Without it, /admin simply 404s here.
+  async rewrites() {
+    const admin = process.env.ADMIN_URL?.replace(/\/$/, '');
+    if (!admin) return [];
+    return [
+      { source: '/admin', destination: `${admin}/admin` },
+      { source: '/admin/:path*', destination: `${admin}/admin/:path*` },
+    ];
+  },
   images: {
     // R2 hosts are explicit; the wildcards allow images added to the CMS by external link
     // (e.g. a logo or poster URL, or a YouTube thumbnail) to be optimised by next/image.

@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/cron/cleanup-media",
+      "path": "/admin/api/cron/cleanup-media",
       "schedule": "0 3 * * *"
     }
   ]

@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { BASE_PATH } from '../lib/base-path';
 
 export interface Role { name: string; permissions: string[]; isOwner: boolean }
 export interface User { id: string; name: string; email: string; role: Role }
@@ -25,7 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const tokenRef = useRef<string | null>(null);
 
   const doRefresh = useCallback(async () => {
-    const res = await fetch('/api/auth/refresh', { method: 'POST' });
+    const res = await fetch(`${BASE_PATH}/api/auth/refresh`, { method: 'POST' });
     if (!res.ok) return false;
     const { accessToken } = await res.json();
     tokenRef.current = accessToken;
@@ -33,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const loadMe = useCallback(async () => {
-    const res = await fetch('/api/auth/me', { headers: { authorization: `Bearer ${tokenRef.current}` } });
+    const res = await fetch(`${BASE_PATH}/api/auth/me`, { headers: { authorization: `Bearer ${tokenRef.current}` } });
     if (!res.ok) return false;
     setUser(await res.json());
     return true;
@@ -52,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(`${BASE_PATH}/api/auth/login`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -71,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(async () => {
-    await fetch('/api/auth/logout', { method: 'POST', headers: { authorization: `Bearer ${tokenRef.current}` } }).catch(() => undefined);
+    await fetch(`${BASE_PATH}/api/auth/logout`, { method: 'POST', headers: { authorization: `Bearer ${tokenRef.current}` } }).catch(() => undefined);
     tokenRef.current = null;
     setUser(null);
     setStatus('anon');
@@ -84,8 +85,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (init.body && typeof init.body === 'string' && !headers['content-type']) headers['content-type'] = 'application/json';
         return { ...init, headers };
       };
-      let res = await fetch(path, build());
-      if (res.status === 401 && (await doRefresh())) res = await fetch(path, build());
+      const url = `${BASE_PATH}${path}`;
+      let res = await fetch(url, build());
+      if (res.status === 401 && (await doRefresh())) res = await fetch(url, build());
       if (res.status === 401) {
         setStatus('anon');
         setUser(null);

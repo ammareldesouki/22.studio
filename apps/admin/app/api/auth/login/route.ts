@@ -3,6 +3,7 @@ import { loginSchema } from '@studioflow/validation/auth';
 import { verifyPassword, signAccessToken, generateRefreshToken, hashToken, refreshTokenExpiry } from '@studioflow/core/auth';
 import { refreshTokenStore } from '@studioflow/core/auth/store';
 import { usersService } from '@studioflow/core/users';
+import { AUTH_COOKIE_PATH } from '../../../../lib/base-path';
 
 // Simple in-memory rate-limiter for login (per-IP, 5 attempts per 60s)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -61,7 +62,7 @@ export const POST = withValidation(loginSchema, async (data, request) => {
   const headers = new Headers();
   headers.append(
     'Set-Cookie',
-    `refresh_token=${rawToken}; HttpOnly; Secure; SameSite=Lax; Path=/api/auth; Max-Age=${7 * 86400}`,
+    `refresh_token=${rawToken}; HttpOnly; Secure; SameSite=Lax; Path=${AUTH_COOKIE_PATH}; Max-Age=${7 * 86400}`,
   );
 
   return Response.json(

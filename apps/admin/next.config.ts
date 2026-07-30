@@ -28,6 +28,9 @@ try {
 }
 
 const nextConfig: NextConfig = {
+  // Served under /admin via Multi-Zones (public site rewrites /admin/* here).
+  // Keep in sync with BASE_PATH in lib/base-path.ts.
+  basePath: '/admin',
   outputFileTracingRoot: path.join(__dirname, '../../'),
   transpilePackages: [
     '@studioflow/core',
