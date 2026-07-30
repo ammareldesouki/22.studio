@@ -6,7 +6,7 @@ export default async function NotFound() {
   return (
     <div className="grid min-h-screen place-items-center pt-32 text-center">
       <div className="wrap">
-        <p className="font-display text-[clamp(90px,22vw,260px)] font-extrabold leading-none text-white">404</p>
+        <p className="font-display text-[clamp(90px,22vw,260px)] font-extrabold leading-none text-fg-strong">404</p>
         <p className="mt-4 text-muted">{t('notFound')}</p>
         <Link href="/" className="btn btn-red mt-8 inline-flex rounded-[2px]" data-cursor="Go">
           {t('backHome')}

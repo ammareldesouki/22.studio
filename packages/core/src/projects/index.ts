@@ -24,6 +24,9 @@ export interface CreateProjectInput {
   serviceIds?: string[];
   relatedIds?: string[];
   seo?: Record<string, unknown>;
+  locale?: 'en' | 'ar';
+  featured?: boolean;
+  order?: number;
   createdById?: string;
 }
 
@@ -41,6 +44,9 @@ export interface UpdateProjectInput {
   serviceIds?: string[];
   relatedIds?: string[];
   seo?: Record<string, unknown>;
+  locale?: 'en' | 'ar';
+  featured?: boolean;
+  order?: number;
   version: number;
   updatedById?: string;
 }
@@ -58,7 +64,9 @@ export interface ProjectRecord {
   results: string | null;
   externalLinks: unknown;
   clientId: string | null;
+  order: number;
   seo: Seo;
+  locale: string;
   version: number;
   publishedAt: string | null;
   createdAt: string;
@@ -81,6 +89,7 @@ function projectSelect() {
     results: true,
     externalLinks: true,
     clientId: true,
+    order: true,
     seoTitle: true,
     seoMetaDescription: true,
     seoCanonicalUrl: true,
@@ -88,6 +97,7 @@ function projectSelect() {
     seoTwitterCard: true,
     seoStructuredData: true,
     seoRobots: true,
+    locale: true,
     version: true,
     publishedAt: true,
     createdAt: true,
@@ -109,7 +119,9 @@ function mapProject(row: Record<string, unknown>): ProjectRecord {
     results: (row.results as string) ?? null,
     externalLinks: row.externalLinks,
     clientId: (row.clientId as string) ?? null,
+    order: (row.order as number) ?? 0,
     seo: columnsToSeo(row as Parameters<typeof columnsToSeo>[0]),
+    locale: (row.locale as string) ?? 'en',
     version: row.version as number,
     publishedAt: row.publishedAt ? (row.publishedAt as Date).toISOString() : null,
     createdAt: (row.createdAt as Date).toISOString(),
@@ -184,6 +196,9 @@ export class ProjectsService {
             results: input.results ?? null,
             externalLinks: (input.externalLinks as never) ?? [],
             clientId: input.clientId ?? null,
+            locale: input.locale ?? 'en',
+            featured: input.featured ?? false,
+            order: input.order ?? 0,
             createdById: input.createdById ?? null,
             ...seoData,
             media: {
@@ -221,14 +236,16 @@ export class ProjectsService {
   ): Promise<ProjectRecord> {
     const current = await db.project.findUnique({
       where: { id },
-      select: { id: true, slug: true },
+      select: { id: true, slug: true, locale: true },
     });
     if (!current) throw new ProjectsError('Project not found', 'NOT_FOUND', 404);
 
     const slug = input.slug ?? current.slug;
-    if (input.slug !== undefined && input.slug !== current.slug) {
+    const targetLocale = input.locale ?? current.locale;
+    if ((input.slug !== undefined && input.slug !== current.slug) || (input.locale !== undefined && input.locale !== current.locale)) {
+      // Slug uniqueness is scoped per locale, so re-check against the target locale.
       const clash = await db.project.findFirst({
-        where: { slug: input.slug, NOT: { id } },
+        where: { slug, locale: targetLocale, NOT: { id } },
         select: { id: true },
       });
       if (clash) throw new ProjectsError('Slug already in use', 'SLUG_TAKEN', 409);
@@ -254,6 +271,9 @@ export class ProjectsService {
     if (input.results !== undefined) basicData.results = input.results;
     if (input.externalLinks !== undefined) basicData.externalLinks = input.externalLinks as never;
     if (input.clientId !== undefined) basicData.clientId = input.clientId ?? null;
+    if (input.locale !== undefined) basicData.locale = input.locale;
+    if (input.featured !== undefined) basicData.featured = input.featured;
+    if (input.order !== undefined) basicData.order = input.order;
     if (input.updatedById !== undefined) basicData.updatedById = input.updatedById ?? null;
     basicData.slug = slug;
     basicData.version = { increment: 1 };
@@ -358,6 +378,50 @@ export class ProjectsService {
     return mapProject(updated as unknown as Record<string, unknown>);
   }
 
+  // Clone a project into a new DRAFT (slug auto-suffixed, same locale), copying its media
+  // refs, service links and related projects. Meant to be edited next — e.g. switched to
+  // Arabic and translated.
+  async duplicate(id: string, createdById?: string): Promise<ProjectRecord> {
+    const src = await this.getById(id);
+    if (!src) throw new ProjectsError('Project not found', 'NOT_FOUND', 404);
+
+    return this.create({
+      title: `${src.title} (copy)`,
+      overview: src.overview ?? undefined,
+      description: src.description ?? undefined,
+      challenge: src.challenge ?? undefined,
+      solution: src.solution ?? undefined,
+      results: src.results ?? undefined,
+      externalLinks: Array.isArray(src.externalLinks) ? (src.externalLinks as unknown[]) : undefined,
+      clientId: src.clientId,
+      mediaRefs: src.media.map((m) => ({ mediaId: m.mediaId, type: m.type as MediaRefInput['type'], order: m.order })),
+      serviceIds: src.services.map((s) => s.id),
+      relatedIds: src.relatedProjects.map((r) => r.id),
+      seo: src.seo as Record<string, unknown>,
+      locale: src.locale as 'en' | 'ar',
+      featured: src.featured,
+      createdById,
+    });
+  }
+
+  async reorder(orderedIds: string[]): Promise<void> {
+    if (orderedIds.length === 0) return;
+    const found = await db.project.findMany({
+      where: { id: { in: orderedIds } },
+      select: { id: true },
+    });
+    const foundIds = new Set(found.map((p) => p.id));
+    const missing = [...new Set(orderedIds)].filter((id) => !foundIds.has(id));
+    if (missing.length) {
+      throw new ProjectsError(`Unknown project id(s): ${missing.join(', ')}`, 'INVALID_REF', 400);
+    }
+    await db.$transaction(
+      orderedIds.map((id, index) =>
+        db.project.update({ where: { id }, data: { order: index } }),
+      ),
+    );
+  }
+
   async delete(id: string): Promise<void> {
     const project = await db.project.findUnique({
       where: { id },
@@ -392,6 +456,7 @@ export class ProjectsService {
     clientId?: string;
     serviceId?: string;
     featured?: boolean;
+    locale?: 'en' | 'ar';
   }) {
     const limit = Math.min(Math.max(params.limit ?? DEFAULT_PAGE_LIMIT, 1), MAX_PAGE_LIMIT);
 
@@ -400,10 +465,11 @@ export class ProjectsService {
     if (params.clientId) where.clientId = params.clientId;
     if (params.serviceId) where.services = { some: { serviceId: params.serviceId } };
     if (params.featured !== undefined) where.featured = params.featured;
+    if (params.locale) where.locale = params.locale;
 
     const items = await db.project.findMany({
       where: where as never,
-      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
+      orderBy: [{ order: 'asc' }, { createdAt: 'desc' }, { id: 'asc' }],
       take: limit + 1,
       ...(params.cursor ? { cursor: { id: params.cursor }, skip: 1 } : {}),
     });

@@ -41,6 +41,8 @@ enum HomepageSectionType {
   TESTIMONIALS
   FAQ
   CTA
+  BEFORE_AFTER
+  PROCESS
 }
 
 // ── Operational entities ─────────────────────────────────────────────────
@@ -107,6 +109,7 @@ model Media {
   type       MediaType
   r2Key      String
   url        String
+  posterUrl  String?
   width      Int?
   height     Int?
   alt        String?
@@ -117,10 +120,11 @@ model Media {
   version    Int       @default(1)
   confirmed  Boolean   @default(false)
 
-  clientLogos    Client[]
-  serviceIcons   Service[]
-  settingsLogos  Settings[]
-  projectMedia   ProjectMedia[]
+  clientLogos      Client[]
+  serviceIcons     Service[]
+  settingsLogos    Settings[] @relation("SettingsLogo")
+  settingsFavicons Settings[] @relation("SettingsFavicon")
+  projectMedia     ProjectMedia[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -150,7 +154,9 @@ model Settings {
   id           String   @id @default(uuid()) @db.Uuid
   siteName     String
   logoId       String?  @db.Uuid
-  logo         Media?   @relation(fields: [logoId], references: [id], onDelete: Restrict)
+  logo         Media?   @relation("SettingsLogo", fields: [logoId], references: [id], onDelete: Restrict)
+  faviconId    String?  @db.Uuid
+  favicon      Media?   @relation("SettingsFavicon", fields: [faviconId], references: [id], onDelete: Restrict)
   socialLinks  Json     @default("{}")
   seoDefaults  Json?    @default("{}")
   analyticsIds Json?    @default("{}")
@@ -169,6 +175,8 @@ model Client {
   logoId String? @db.Uuid
   logo   Media?  @relation(fields: [logoId], references: [id], onDelete: Restrict)
   website String?
+  // How the client is shown on the public site: "both" (logo + name), "name", or "logo".
+  displayMode String @default("both")
   order   Int     @default(0)
 
   // Content Engine base fields
@@ -194,7 +202,7 @@ model Client {
 
   projects Project[]
 
-  @@unique([slug])
+  @@unique([slug, locale])
   @@index([status])
   @@index([featured])
   @@index([publishedAt])
@@ -232,7 +240,7 @@ model Service {
   subServices SubService[]
   projects    ProjectService[]
 
-  @@unique([slug])
+  @@unique([slug, locale])
   @@index([status])
   @@index([featured])
   @@index([publishedAt])
@@ -264,6 +272,7 @@ model Project {
   solution    String?
   results     String?
   externalLinks Json? @default("[]")
+  order       Int      @default(0)
   clientId    String?  @db.Uuid
   client      Client?  @relation(fields: [clientId], references: [id], onDelete: Restrict)
 
@@ -292,11 +301,12 @@ model Project {
   relatedProjects  RelatedProject[]  @relation("RelatedProjectA")
   relatedTo        RelatedProject[]  @relation("RelatedProjectB")
 
-  @@unique([slug])
+  @@unique([slug, locale])
   @@index([status])
   @@index([featured])
   @@index([publishedAt])
   @@index([clientId])
+  @@index([order])
 }
 
 model HomepageSection {
@@ -326,7 +336,7 @@ model HomepageSection {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@unique([slug])
+  @@unique([slug, locale])
   @@index([status])
   @@index([featured])
   @@index([publishedAt])
@@ -357,7 +367,7 @@ model Testimonial {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@unique([slug])
+  @@unique([slug, locale])
   @@index([status])
   @@index([featured])
   @@index([publishedAt])
@@ -386,7 +396,7 @@ model Page {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@unique([slug])
+  @@unique([slug, locale])
   @@index([status])
   @@index([featured])
   @@index([publishedAt])
@@ -430,10 +440,28 @@ model Message {
   name      String
   email     String
   message   String
+  // Snapshot of the budget option the enquirer picked (free text, survives Budget deletion).
+  budget    String?
   locale    String   @default("en")
   handled   Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@index([handled])
   @@index([createdAt])
+}
+
+// Selectable budget/plan options for the public contact form. Managed in the CMS.
+model Budget {
+  id        String   @id @default(uuid()) @db.Uuid
+  labelEn   String
+  labelAr   String?
+  // Free-text price/range including the currency the admin types, e.g. "$1k–$5k".
+  amount    String?
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+  @@index([active])
 }

@@ -33,6 +33,8 @@ export const createProjectSchema = z.object({
   serviceIds: z.array(z.string().uuid()).optional().default([]),
   relatedIds: z.array(z.string().uuid()).optional().default([]),
   seo: seoSchema,
+  locale: z.enum(['en', 'ar']).optional(),
+  featured: z.boolean().optional(),
 });
 
 export const updateProjectSchema = z.object({
@@ -49,10 +51,16 @@ export const updateProjectSchema = z.object({
   serviceIds: z.array(z.string().uuid()).optional(),
   relatedIds: z.array(z.string().uuid()).optional(),
   seo: seoSchema,
+  locale: z.enum(['en', 'ar']).optional(),
+  featured: z.boolean().optional(),
   version: z.number().int().positive(),
 });
 
 export const statusActionSchema = z.object({
   action: z.enum(['publish', 'unpublish', 'archive', 'restore']),
   version: z.number().int().positive(),
+});
+
+export const projectReorderSchema = z.object({
+  orderedIds: z.array(z.string().uuid()),
 });

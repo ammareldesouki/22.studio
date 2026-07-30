@@ -3,7 +3,13 @@
 import { useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 
-export function ContactForm() {
+export interface BudgetOption {
+  id: string;
+  label: string;
+  amount: string | null;
+}
+
+export function ContactForm({ budgets = [] }: { budgets?: BudgetOption[] }) {
   const t = useTranslations('contact');
   const locale = useLocale();
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
@@ -21,6 +27,7 @@ export function ContactForm() {
           name: fd.get('name'),
           email: fd.get('email'),
           message: fd.get('message'),
+          budget: fd.get('budget') || undefined,
           company: fd.get('company'),
           locale,
         }),
@@ -37,7 +44,7 @@ export function ContactForm() {
   }
 
   if (status === 'sent') {
-    return <p className="font-display text-[clamp(22px,2.4vw,32px)] font-medium text-white">{t('sent')}</p>;
+    return <p className="font-display text-[clamp(22px,2.4vw,32px)] font-medium text-fg-strong">{t('sent')}</p>;
   }
 
   return (
@@ -51,6 +58,19 @@ export function ContactForm() {
       />
       <input name="name" required maxLength={200} placeholder={t('name')} className="input" />
       <input name="email" type="email" required placeholder={t('email')} className="input" />
+      {budgets.length > 0 && (
+        <select name="budget" defaultValue="" className="input" aria-label={t('budget')}>
+          <option value="">{t('budgetPlaceholder')}</option>
+          {budgets.map((b) => {
+            const text = b.amount ? `${b.label} — ${b.amount}` : b.label;
+            return (
+              <option key={b.id} value={text}>
+                {text}
+              </option>
+            );
+          })}
+        </select>
+      )}
       <textarea name="message" required rows={5} maxLength={2000} placeholder={t('message')} className="input resize-none" />
       <button type="submit" disabled={status === 'sending'} className="btn btn-red self-start rounded-[2px] disabled:opacity-60" data-cursor="Go">
         {status === 'sending' ? t('sending') : t('send')}

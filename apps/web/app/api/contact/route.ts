@@ -6,6 +6,7 @@ const schema = z.object({
   name: z.string().min(1).max(200),
   email: z.string().email(),
   message: z.string().min(1).max(2000),
+  budget: z.string().max(160).optional(), // selected budget option (display text), optional
   locale: z.string().max(5).optional(),
   company: z.string().optional(), // honeypot — real users leave it empty
 });
@@ -30,6 +31,7 @@ export async function POST(request: Request): Promise<Response> {
       name: parsed.data.name,
       email: parsed.data.email,
       message: parsed.data.message,
+      budget: parsed.data.budget?.trim() || null,
       locale: parsed.data.locale ?? 'en',
     },
   });

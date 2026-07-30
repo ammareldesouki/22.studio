@@ -4,6 +4,7 @@ import { htmlSafe, httpUrl } from './shared';
 export const updateSettingsSchema = z.object({
   siteName: htmlSafe(200).optional(),
   logoId: z.string().uuid().nullable().optional(),
+  faviconId: z.string().uuid().nullable().optional(),
   // Social links: plain values (URLs or handles) that must not smuggle HTML or javascript:.
   socialLinks: z.object({}).catchall(htmlSafe(500)).optional(),
   seoDefaults: z

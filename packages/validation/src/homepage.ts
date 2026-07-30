@@ -2,7 +2,8 @@ import { z } from 'zod';
 import { htmlSafe as safe, httpUrl as safeUrl } from './shared';
 
 const heroConfig = z.object({
-  headline: safe(200),
+  // All optional: an empty/partial config falls back to the site's themed defaults.
+  headline: safe(200).optional(),
   subheadline: safe(500).optional(),
   ctaText: safe(60).optional(),
   ctaLink: safeUrl().optional(),
@@ -56,10 +57,19 @@ const faqConfig = z.object({
 });
 
 const ctaConfig = z.object({
-  headline: safe(200),
+  headline: safe(200).optional(),
   subheadline: safe(500).optional(),
   buttonText: safe(60).optional(),
   buttonLink: safeUrl().optional(),
+});
+
+// Decorative sections: an optional heading override; their inner content is themed in code.
+const beforeAfterConfig = z.object({
+  title: safe(200).optional(),
+});
+
+const processConfig = z.object({
+  title: safe(200).optional(),
 });
 
 export const homepageSectionTypeEnum = z.enum([
@@ -71,6 +81,8 @@ export const homepageSectionTypeEnum = z.enum([
   'TESTIMONIALS',
   'FAQ',
   'CTA',
+  'BEFORE_AFTER',
+  'PROCESS',
 ]);
 
 const sectionConfigSchemas: Record<string, z.ZodType> = {
@@ -82,6 +94,8 @@ const sectionConfigSchemas: Record<string, z.ZodType> = {
   TESTIMONIALS: testimonialsConfig,
   FAQ: faqConfig,
   CTA: ctaConfig,
+  BEFORE_AFTER: beforeAfterConfig,
+  PROCESS: processConfig,
 };
 
 function getSectionConfigSchema(type: string): z.ZodType {
@@ -94,6 +108,7 @@ function getSectionConfigSchema(type: string): z.ZodType {
 
 export const createHomepageSectionSchema = z.object({
   type: homepageSectionTypeEnum,
+  locale: z.enum(['en', 'ar']).optional(),
 });
 
 export const updateHomepageSectionSchema = z.object({

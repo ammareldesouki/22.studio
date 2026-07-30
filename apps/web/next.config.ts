@@ -24,10 +24,14 @@ const nextConfig: NextConfig = {
   ],
   serverExternalPackages: ['@prisma/client', '.prisma/client'],
   images: {
+    // R2 hosts are explicit; the wildcards allow images added to the CMS by external link
+    // (e.g. a logo or poster URL, or a YouTube thumbnail) to be optimised by next/image.
     remotePatterns: [
       ...(r2Host ? [{ protocol: 'https' as const, hostname: r2Host }] : []),
       { protocol: 'https' as const, hostname: '**.r2.cloudflarestorage.com' },
       { protocol: 'https' as const, hostname: '**.r2.dev' },
+      { protocol: 'https' as const, hostname: '**' },
+      { protocol: 'http' as const, hostname: '**' },
     ],
   },
 };

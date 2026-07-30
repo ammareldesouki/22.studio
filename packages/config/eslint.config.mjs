@@ -24,4 +24,12 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
+  {
+    // Dev-only data seed scripts legitimately index known-good fixture arrays and
+    // read back rows just inserted; non-null assertions are idiomatic there.
+    files: ['**/seed*.ts'],
+    rules: {
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
+  },
 );

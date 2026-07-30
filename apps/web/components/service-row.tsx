@@ -26,7 +26,7 @@ export function ServiceRow({
         style={{ background: GRADES[index % GRADES.length] }}
       />
       <span className="w-11 flex-none font-display text-[13px] font-medium text-muted">0{index + 1}</span>
-      <span className="flex-1 font-display text-[clamp(30px,5vw,68px)] font-extrabold tracking-tight text-white transition-transform duration-500 ease-expo group-hover:translate-x-2.5 rtl:group-hover:-translate-x-2.5">
+      <span className="flex-1 font-display text-[clamp(30px,5vw,68px)] font-extrabold tracking-tight text-fg-strong transition-transform duration-500 ease-expo group-hover:translate-x-2.5 rtl:group-hover:-translate-x-2.5">
         {service.name}
       </span>
       {service.description && (

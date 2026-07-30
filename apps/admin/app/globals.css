@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-ink text-[#e7e7e8] font-sans antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display font-bold tracking-tight;
+  }
+  ::selection {
+    background: #e8192c;
+    color: #fff;
+  }
+  :focus-visible {
+    outline: 2px solid #e8192c;
+    outline-offset: 2px;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+}
+
+@layer components {
+  /* Panels */
+  .panel {
+    @apply border border-line bg-card;
+  }
+  .card-2 {
+    @apply border border-line bg-[#1e1e22];
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md font-display text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+    padding: 9px 16px;
+  }
+  .btn-red { @apply bg-red text-white hover:bg-red-dim; }
+  .btn-ghost { @apply border border-line text-white hover:border-white/40; }
+  .btn-sm { padding: 6px 12px; @apply text-[13px]; }
+  .btn-danger { @apply border border-red/40 text-red hover:bg-red/10; }
+
+  /* Form controls */
+  .field { @apply flex flex-col gap-1.5; }
+  .field > label {
+    @apply font-display text-[12px] font-medium uppercase tracking-[0.08em] text-muted;
+  }
+  .input {
+    @apply w-full rounded-md border border-line bg-[#151518] px-3.5 py-2.5 text-[15px] text-white transition-colors placeholder:text-muted/70;
+  }
+  .input:focus { @apply border-white/30 outline-none; }
+  textarea.input { @apply resize-y; }
+
+  /* Labels / chips */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 font-display text-[11px] font-medium uppercase tracking-[0.06em];
+  }
+  .eyebrow {
+    @apply font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-muted;
+  }
+
+  /* Status pills */
+  .pill { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[11px] font-semibold uppercase tracking-[0.04em]; }
+  .pill-published { @apply bg-emerald-500/[0.12] text-emerald-400; }
+  .pill-draft { @apply bg-white/[0.08] text-muted; }
+  .pill-archived { @apply bg-amber-500/[0.12] text-amber-400; }
+
+  /* Data table */
+  .dt { @apply w-full text-left text-[14px]; }
+  .dt th {
+    @apply border-b border-line px-4 py-3 font-display text-[11px] font-semibold uppercase tracking-[0.08em] text-muted;
+  }
+  .dt td { @apply border-b border-line px-4 py-3.5 text-[#d6d6d8]; }
+  .dt tbody tr:hover td, .dt tr:hover td { @apply bg-white/[0.02]; }
+}

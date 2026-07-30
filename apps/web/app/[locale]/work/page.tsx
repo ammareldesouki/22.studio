@@ -18,7 +18,7 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
       <section className="wrap py-[clamp(48px,8vw,110px)]">
         <Reveal className="flex flex-col gap-4">
           <p className="eyebrow">{t('title')}</p>
-          <h1 className="text-[clamp(40px,7vw,100px)] text-white">{t('heading')}</h1>
+          <h1 className="text-[clamp(40px,7vw,100px)] text-fg-strong">{t('heading')}</h1>
           <p className="max-w-[40ch] text-[clamp(15px,1.3vw,18px)] text-muted">{t('sub')}</p>
         </Reveal>
       </section>
@@ -28,9 +28,9 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
           <p className="text-muted">{t('empty')}</p>
         ) : (
           <Reveal>
-            <div className="grid grid-cols-12 gap-[clamp(16px,2vw,28px)]">
-              {items.map((p, i) => (
-                <ProjectTile key={p.id} project={p} viewLabel={tc('viewCase')} variant={i % 3 === 0 ? 'wide' : 'half'} />
+            <div className="columns-1 gap-[clamp(16px,2vw,28px)] sm:columns-2 lg:columns-3">
+              {items.map((p) => (
+                <ProjectTile key={p.id} project={p} viewLabel={tc('viewCase')} />
               ))}
             </div>
           </Reveal>

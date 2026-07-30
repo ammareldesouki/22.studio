@@ -14,11 +14,13 @@ export interface ClientRecord {
   name: string;
   logoId: string | null;
   website: string | null;
+  displayMode: string;
   order: number;
   status: string;
   slug: string;
   featured: boolean;
   seo: Seo;
+  locale: string;
   version: number;
   publishedAt: string | null;
   createdAt: string;
@@ -32,6 +34,7 @@ function clientSelect() {
     name: true,
     logoId: true,
     website: true,
+    displayMode: true,
     order: true,
     status: true,
     slug: true,
@@ -43,6 +46,7 @@ function clientSelect() {
     seoTwitterCard: true,
     seoStructuredData: true,
     seoRobots: true,
+    locale: true,
     version: true,
     publishedAt: true,
     createdAt: true,
@@ -56,11 +60,13 @@ function mapClient(row: Record<string, unknown>): ClientRecord {
     name: row.name as string,
     logoId: (row.logoId as string) ?? null,
     website: (row.website as string) ?? null,
+    displayMode: (row.displayMode as string) ?? 'both',
     order: row.order as number,
     status: row.status as string,
     slug: row.slug as string,
     featured: row.featured as boolean,
     seo: columnsToSeo(row as Parameters<typeof columnsToSeo>[0]),
+    locale: (row.locale as string) ?? 'en',
     version: row.version as number,
     publishedAt: row.publishedAt ? (row.publishedAt as Date).toISOString() : null,
     createdAt: (row.createdAt as Date).toISOString(),
@@ -73,8 +79,10 @@ export class ClientsService {
     name: string;
     logoId?: string | null;
     website?: string | null;
+    displayMode?: string;
     order?: number;
     seo?: Record<string, unknown>;
+    locale?: 'en' | 'ar';
     createdById?: string;
   }): Promise<ClientRecord> {
     const baseSlug = slugify(input.name);
@@ -88,8 +96,10 @@ export class ClientsService {
           name: input.name,
           logoId: input.logoId ?? null,
           website: input.website ?? null,
+          displayMode: input.displayMode ?? 'both',
           order: input.order ?? 0,
           slug,
+          locale: input.locale ?? 'en',
           createdById: input.createdById ?? null,
           ...seoData,
         },
@@ -105,22 +115,26 @@ export class ClientsService {
       name?: string;
       logoId?: string | null;
       website?: string | null;
+      displayMode?: string;
       order?: number;
       slug?: string;
       seo?: Record<string, unknown>;
+      locale?: 'en' | 'ar';
       version: number;
     },
   ): Promise<ClientRecord> {
     const current = await db.client.findUnique({
       where: { id },
-      select: { id: true, slug: true },
+      select: { id: true, slug: true, locale: true },
     });
     if (!current) throw new ClientsError('Client not found', 'NOT_FOUND', 404);
 
     const slug = input.slug ?? current.slug;
-    if (input.slug !== undefined && input.slug !== current.slug) {
+    const locale = input.locale ?? current.locale;
+    if ((input.slug !== undefined && input.slug !== current.slug) || (input.locale !== undefined && input.locale !== current.locale)) {
+      // Slug uniqueness is scoped per locale, so re-check against the target locale.
       const clash = await db.client.findFirst({
-        where: { slug: input.slug, NOT: { id } },
+        where: { slug, locale, NOT: { id } },
         select: { id: true },
       });
       if (clash) throw new ClientsError('Slug already in use', 'SLUG_TAKEN', 409);
@@ -134,8 +148,10 @@ export class ClientsService {
     if (input.name !== undefined) data.name = input.name;
     if ('logoId' in input) data.logoId = input.logoId ?? null;
     if ('website' in input) data.website = input.website ?? null;
+    if (input.displayMode !== undefined) data.displayMode = input.displayMode;
     if (input.order !== undefined) data.order = input.order;
     data.slug = slug;
+    if (input.locale !== undefined) data.locale = locale;
     data.version = { increment: 1 };
     if (input.seo !== undefined) {
       Object.assign(data, seoToColumns(input.seo as never));
@@ -197,6 +213,24 @@ export class ClientsService {
     return mapClient(updated as unknown as Record<string, unknown>);
   }
 
+  // Clone a client into a new DRAFT (slug auto-suffixed, same locale). The copy is meant
+  // to be edited next — e.g. switch it to Arabic and translate the name.
+  async duplicate(id: string, createdById?: string): Promise<ClientRecord> {
+    const src = await this.getById(id);
+    if (!src) throw new ClientsError('Client not found', 'NOT_FOUND', 404);
+
+    return this.create({
+      name: `${src.name} (copy)`,
+      logoId: src.logoId,
+      website: src.website,
+      displayMode: src.displayMode,
+      order: src.order,
+      seo: src.seo as Record<string, unknown>,
+      locale: src.locale as 'en' | 'ar',
+      createdById,
+    });
+  }
+
   async delete(id: string): Promise<void> {
     const client = await db.client.findUnique({
       where: { id },
@@ -236,10 +270,11 @@ export class ClientsService {
     );
   }
 
-  async list(params: { cursor?: string; limit?: number }) {
+  async list(params: { cursor?: string; limit?: number; locale?: 'en' | 'ar' }) {
     const limit = Math.min(Math.max(params.limit ?? DEFAULT_PAGE_LIMIT, 1), MAX_PAGE_LIMIT);
 
     const items = await db.client.findMany({
+      ...(params.locale ? { where: { locale: params.locale } } : {}),
       // `id` last keeps the keyset stable when clients share order/name.
       orderBy: [{ order: 'asc' }, { name: 'asc' }, { id: 'asc' }],
       take: limit + 1,

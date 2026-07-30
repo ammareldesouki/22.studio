@@ -97,6 +97,16 @@ temp/
 *.swp
 *.swo
 
+# --- Scratch / working files (not part of the app) ------------------------
+# Screenshots, AI-image exports, and the intro-animation source mockup used
+# while building; the real logo lives at apps/web/public/logo.png + app/icon.png.
+/*.png
+/*.jpg
+/*.jpeg
+/Screenshot *
+/ChatGPT Image *
+/timeline_scrub_real_logo_v2.html
+
 # --- OS files -------------------------------------------------------------
 .DS_Store
 .DS_Store?

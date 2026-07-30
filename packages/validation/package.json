@@ -12,6 +12,7 @@
     "./media": "./src/media.ts",
     "./projects": "./src/projects.ts",
     "./clients": "./src/clients.ts",
+    "./budgets": "./src/budgets.ts",
     "./services": "./src/services.ts",
     "./homepage": "./src/homepage.ts",
     "./settings": "./src/settings.ts",

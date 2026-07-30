@@ -10,18 +10,20 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "next": "^15.1.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "@gsap/react": "^2.1.2",
+    "@studioflow/core": "workspace:*",
+    "@studioflow/db": "workspace:*",
     "@studioflow/shared": "workspace:*",
     "@studioflow/types": "workspace:*",
     "@studioflow/ui": "workspace:*",
-    "@studioflow/core": "workspace:*",
-    "@studioflow/db": "workspace:*",
     "@studioflow/validation": "workspace:*",
     "framer-motion": "^11.11.0",
+    "gsap": "^3.15.0",
     "lenis": "^1.1.14",
+    "next": "^15.1.0",
     "next-intl": "^3.25.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
@@ -29,9 +31,9 @@
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "tailwindcss": "^3.4.0",
-    "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   }

@@ -41,6 +41,7 @@ export interface MediaRecord {
   type: string;
   r2Key: string;
   url: string;
+  posterUrl: string | null;
   width: number | null;
   height: number | null;
   alt: string | null;
@@ -83,6 +84,42 @@ const MAX_VIDEO_SIZE = 100 * 1024 * 1024;
 
 function isImageMime(contentType: string): boolean {
   return contentType.startsWith('image/');
+}
+
+// Infer a media type from an external link so YouTube/Vimeo/video files are stored correctly.
+function detectLinkType(url: string): 'YOUTUBE' | 'VIMEO' | 'VIDEO' | 'IMAGE' {
+  const u = url.toLowerCase();
+  if (/youtube\.com|youtu\.be/.test(u)) return 'YOUTUBE';
+  if (/vimeo\.com/.test(u)) return 'VIMEO';
+  if (/\.(mp4|webm|mov|m4v)(\?|#|$)/.test(u)) return 'VIDEO';
+  return 'IMAGE';
+}
+
+const LINK_TYPES = new Set(['YOUTUBE', 'VIMEO', 'VIDEO', 'IMAGE']);
+
+function youtubeThumb(url: string): string | null {
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+  return m?.[1] ? `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg` : null;
+}
+
+// Best-effort poster for an external video link so the CMS can show a real thumbnail
+// instead of a blank tile. YouTube is derived from the id (no network); Vimeo uses its
+// public oEmbed endpoint. Any failure is non-fatal — we just store a null poster.
+async function posterForLink(url: string, type: string): Promise<string | null> {
+  if (type === 'YOUTUBE') return youtubeThumb(url);
+  if (type === 'VIMEO') {
+    try {
+      const res = await fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`, {
+        signal: AbortSignal.timeout(4000),
+      });
+      if (!res.ok) return null;
+      const data = (await res.json()) as { thumbnail_url?: unknown };
+      return typeof data.thumbnail_url === 'string' ? data.thumbnail_url : null;
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 // ── Service ────────────────────────────────────────────────────────────────
@@ -138,6 +175,28 @@ export class MediaService {
     const uploadUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
 
     return { mediaId: media.id, uploadUrl };
+  }
+
+  // Add a media item by external URL (image, direct video file, YouTube, or Vimeo).
+  // No R2 object is created — the link is stored as-is and marked confirmed immediately.
+  async createFromUrl(input: { url: string; type?: string; alt?: string | null; folderId?: string | null }) {
+    const url = input.url.trim();
+    if (!/^https?:\/\//i.test(url)) {
+      throw new MediaError('Link must be an http(s) URL', 'INVALID_URL', 422);
+    }
+    const type = input.type && LINK_TYPES.has(input.type) ? input.type : detectLinkType(url);
+    const posterUrl = await posterForLink(url, type);
+    return db.media.create({
+      data: {
+        type: type as never,
+        r2Key: '',
+        url,
+        posterUrl,
+        alt: input.alt ?? null,
+        folderId: input.folderId ?? null,
+        confirmed: true,
+      },
+    });
   }
 
   async confirm(mediaId: string): Promise<MediaRecord> {

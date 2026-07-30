@@ -6,6 +6,7 @@ import { publicContent, type Locale } from '@studioflow/core/public';
 import { Link } from '../../../i18n/navigation';
 import { Reveal } from '../../../../components/reveal';
 import { poster } from '../../../../lib/poster';
+import { classifyMedia, posterFor } from '../../../../lib/media-embed';
 
 export const revalidate = 300;
 
@@ -28,6 +29,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ locale
   const t = await getTranslations('project');
   const year = p.publishedAt ? new Date(p.publishedAt).getFullYear() : null;
   const cover = p.media[0];
+  const coverPoster = cover ? cover.posterUrl || posterFor(cover.url, cover.type) : null;
+  const coverIsVideo = cover ? classifyMedia(cover.url, cover.type).kind !== 'image' : false;
   const gallery = p.media.length > 0 ? p.media : null;
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -43,17 +46,22 @@ export default async function ProjectPage({ params }: { params: Promise<{ locale
     <article>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* Cover */}
-      <header className="relative flex min-h-[86svh] flex-col justify-end overflow-hidden pb-[clamp(40px,6vw,72px)]">
-        <div className="absolute inset-0 -z-20" style={cover ? undefined : { background: poster(p.slug) }}>
-          {cover && <Image src={cover.url} alt={cover.alt || p.title} fill sizes="100vw" className="object-cover" priority />}
+      <header data-theme="dark" className="relative flex min-h-[86svh] flex-col justify-end overflow-hidden bg-ink pb-[clamp(40px,6vw,72px)]">
+        <div className="absolute inset-0 -z-20" style={coverPoster ? undefined : { background: poster(p.slug) }}>
+          {coverPoster && <Image src={coverPoster} alt={cover?.alt || p.title} fill sizes="100vw" className="object-cover" priority />}
         </div>
+        {coverIsVideo && (
+          <span className="absolute left-1/2 top-[38%] z-[1] grid h-16 w-16 -translate-x-1/2 place-items-center rounded-full bg-red/90 text-xl text-fg-strong shadow-lg">
+            ▶
+          </span>
+        )}
         <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(180deg, rgba(13,13,15,0.5), transparent 40%, rgba(13,13,15,0.92))' }} />
         <div className="wrap">
           <p className="mb-5 flex flex-wrap gap-4 font-display text-[13px] font-semibold uppercase tracking-[0.16em] text-red">
-            {p.client && <span className="text-white">{p.client.name}</span>}
-            {year && <span className="text-white">{year}</span>}
+            {p.client && <span className="text-fg-strong">{p.client.name}</span>}
+            {year && <span className="text-fg-strong">{year}</span>}
           </p>
-          <h1 className="text-[clamp(40px,7.4vw,110px)] text-white">{p.title}</h1>
+          <h1 className="text-[clamp(40px,7.4vw,110px)] text-fg-strong">{p.title}</h1>
           {p.overview && <p className="mt-6 max-w-[46ch] text-[clamp(16px,1.5vw,20px)] leading-relaxed text-muted">{p.overview}</p>}
         </div>
       </header>
@@ -76,7 +84,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ locale
         {p.results && (
           <Reveal className="mt-[clamp(40px,5vw,72px)] border-t border-line pt-[clamp(32px,4vw,56px)]">
             <p className="eyebrow">{t('results')}</p>
-            <p className="mt-4 max-w-[24ch] font-display text-[clamp(28px,4vw,56px)] font-medium leading-[1.15] tracking-tight text-white">{p.results}</p>
+            <p className="mt-4 max-w-[24ch] font-display text-[clamp(28px,4vw,56px)] font-medium leading-[1.15] tracking-tight text-fg-strong">{p.results}</p>
           </Reveal>
         )}
       </section>
@@ -85,14 +93,34 @@ export default async function ProjectPage({ params }: { params: Promise<{ locale
       <section className="wrap pb-[clamp(64px,9vw,140px)]">
         <div className="columns-1 gap-[clamp(16px,2vw,28px)] md:columns-2">
           {(gallery ?? [0, 1, 2, 3]).map((m, i) => {
-            const hasImg = typeof m === 'object';
+            const aspect = i % 2 ? '4 / 3' : '4 / 5';
+            if (typeof m !== 'object') {
+              return (
+                <Reveal key={i} className="mb-[clamp(16px,2vw,28px)] break-inside-avoid">
+                  <div className="relative overflow-hidden bg-card" style={{ aspectRatio: aspect, background: poster(p.slug + i) }} />
+                </Reveal>
+              );
+            }
+            const info = classifyMedia(m.url, m.type);
             return (
               <Reveal key={i} className="mb-[clamp(16px,2vw,28px)] break-inside-avoid">
-                <div
-                  className="relative overflow-hidden bg-card"
-                  style={{ aspectRatio: i % 2 ? '4 / 3' : '4 / 5', background: hasImg ? undefined : poster(p.slug + i) }}
-                >
-                  {hasImg && <Image src={m.url} alt={m.alt || p.title} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" />}
+                <div className="relative overflow-hidden bg-card" style={{ aspectRatio: info.kind === 'image' ? aspect : '16 / 9' }}>
+                  {info.kind === 'image' && (
+                    <Image src={m.url} alt={m.alt || p.title} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" />
+                  )}
+                  {(info.kind === 'youtube' || info.kind === 'vimeo') && info.embedUrl && (
+                    <iframe
+                      src={info.embedUrl}
+                      title={m.alt || p.title}
+                      className="absolute inset-0 h-full w-full"
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  )}
+                  {info.kind === 'file' && info.fileUrl && (
+                    <video src={info.fileUrl} controls playsInline className="absolute inset-0 h-full w-full object-cover" />
+                  )}
                 </div>
               </Reveal>
             );
@@ -108,11 +136,11 @@ export default async function ProjectPage({ params }: { params: Promise<{ locale
           </Reveal>
           <div className="grid gap-[clamp(16px,2vw,28px)] md:grid-cols-2">
             {p.related.map((r) => (
-              <Link key={r.slug} href={`/work/${r.slug}`} data-cursor={t('next')} className="group relative block aspect-[16/10] overflow-hidden bg-card">
+              <Link key={r.slug} href={`/work/${r.slug}`} data-theme="dark" data-cursor={t('next')} className="group relative block aspect-[16/10] overflow-hidden bg-card">
                 <div className="absolute inset-0 transition-transform duration-[1100ms] ease-expo group-hover:scale-105" style={{ background: poster(r.slug) }} />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(10,10,12,0.86))' }} />
                 <div className="absolute inset-x-0 bottom-0 p-[clamp(20px,2vw,32px)]">
-                  <h3 className="text-[clamp(20px,2.2vw,30px)] text-white">{r.title}</h3>
+                  <h3 className="text-[clamp(20px,2.2vw,30px)] text-fg-strong">{r.title}</h3>
                 </div>
               </Link>
             ))}
@@ -127,7 +155,7 @@ function Meta({ k, v }: { k: string; v: string }) {
   return (
     <div>
       <dt className="label">{k}</dt>
-      <dd className="mt-2 font-display text-[clamp(15px,1.3vw,18px)] font-semibold text-white">{v}</dd>
+      <dd className="mt-2 font-display text-[clamp(15px,1.3vw,18px)] font-semibold text-fg-strong">{v}</dd>
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
         <section className="wrap py-[clamp(48px,8vw,120px)]">
           <Reveal className="flex flex-col gap-5">
             <p className="eyebrow">{t('title')}</p>
-            <h1 className="text-[clamp(40px,7vw,96px)] text-white">{s.name}</h1>
+            <h1 className="text-[clamp(40px,7vw,96px)] text-fg-strong">{s.name}</h1>
             {s.description && <p className="max-w-[48ch] text-[clamp(16px,1.5vw,20px)] leading-relaxed text-muted">{s.description}</p>}
           </Reveal>
         </section>
@@ -43,7 +43,7 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
             <div className="grid gap-x-10 gap-y-8 border-t border-line pt-8 md:grid-cols-2">
               {s.subServices.map((ss) => (
                 <Reveal key={ss.id}>
-                  <h3 className="font-display text-xl font-bold text-white">{ss.name}</h3>
+                  <h3 className="font-display text-xl font-bold text-fg-strong">{ss.name}</h3>
                   {ss.description && <p className="mt-2 text-sm leading-relaxed text-muted">{ss.description}</p>}
                 </Reveal>
               ))}
@@ -57,9 +57,9 @@ export default async function ServiceDetail({ params }: { params: Promise<{ loca
               <p className="eyebrow">{t('relatedWork')}</p>
             </Reveal>
             <Reveal>
-              <div className="grid grid-cols-12 gap-[clamp(16px,2vw,28px)]">
-                {s.projects.map((p, i) => (
-                  <ProjectTile key={p.id} project={p} viewLabel={tc('viewCase')} variant={i % 3 === 0 ? 'wide' : 'half'} />
+              <div className="columns-1 gap-[clamp(16px,2vw,28px)] sm:columns-2 lg:columns-3">
+                {s.projects.map((p) => (
+                  <ProjectTile key={p.id} project={p} viewLabel={tc('viewCase')} />
                 ))}
               </div>
             </Reveal>

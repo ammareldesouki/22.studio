@@ -27,6 +27,15 @@ export const uploadIntentSchema = z.object({
   alt: z.string().max(500).optional(),
 });
 
+// Add media by external link (image / direct video / YouTube / Vimeo). Type is optional —
+// the service infers it from the URL when omitted.
+export const createMediaLinkSchema = z.object({
+  url: z.string().url().refine((u) => /^https?:\/\//i.test(u), { message: 'must be an http(s) URL' }),
+  type: z.enum(['IMAGE', 'VIDEO', 'YOUTUBE', 'VIMEO']).optional(),
+  alt: z.string().max(500).optional(),
+  folderId: z.string().uuid().optional().nullable(),
+});
+
 export const updateMediaSchema = z.object({
   alt: z.string().max(500).optional(),
   tags: z.array(z.string().max(100)).optional(),

@@ -11,7 +11,9 @@ async function handleError(e: unknown): Promise<Response | null> {
 export const GET = async (request: Request): Promise<Response> => {
   try {
     await guardRoute(request, PERMISSIONS.HOMEPAGE_MANAGE);
-    const sections = await homepageService.list();
+    const localeParam = new URL(request.url).searchParams.get('locale');
+    const locale = localeParam === 'ar' ? 'ar' : localeParam === 'en' ? 'en' : undefined;
+    const sections = await homepageService.list({ locale });
     return Response.json(sections);
   } catch (e) {
     const err = await handleError(e);

@@ -18,6 +18,8 @@ export const createClientSchema = z.object({
   website: z.string().url().optional().nullable(),
   order: z.number().int().nonnegative().optional(),
   seo: seoSchema,
+  locale: z.enum(['en', 'ar']).optional(),
+  displayMode: z.enum(['both', 'name', 'logo']).optional(),
 });
 
 export const updateClientSchema = z.object({
@@ -27,6 +29,8 @@ export const updateClientSchema = z.object({
   order: z.number().int().nonnegative().optional(),
   slug: z.string().max(500).optional(),
   seo: seoSchema,
+  locale: z.enum(['en', 'ar']).optional(),
+  displayMode: z.enum(['both', 'name', 'logo']).optional(),
   version: z.number().int().positive(),
 });
 

@@ -8,6 +8,7 @@ export interface HomepageSectionRecord {
   order: number;
   config: Record<string, unknown>;
   slug: string;
+  locale: string;
   version: number;
   createdAt: string;
   updatedAt: string;
@@ -21,6 +22,7 @@ function mapSection(row: Record<string, unknown>): HomepageSectionRecord {
     order: row.order as number,
     config: (row.config as Record<string, unknown>) ?? {},
     slug: row.slug as string,
+    locale: (row.locale as string) ?? 'en',
     version: row.version as number,
     createdAt: (row.createdAt as Date).toISOString(),
     updatedAt: (row.updatedAt as Date).toISOString(),
@@ -36,6 +38,8 @@ export const HOMEPAGE_SECTION_TYPES = [
   'TESTIMONIALS',
   'FAQ',
   'CTA',
+  'BEFORE_AFTER',
+  'PROCESS',
 ] as const;
 
 export type HomepageSectionType = (typeof HOMEPAGE_SECTION_TYPES)[number];
@@ -43,6 +47,7 @@ export type HomepageSectionType = (typeof HOMEPAGE_SECTION_TYPES)[number];
 export class HomepageService {
   async create(input: {
     type: HomepageSectionType;
+    locale?: 'en' | 'ar';
     createdById?: string;
   }): Promise<HomepageSectionRecord> {
     const baseSlug = slugify(input.type);
@@ -52,6 +57,7 @@ export class HomepageService {
         data: {
           type: input.type,
           slug,
+          locale: input.locale ?? 'en',
           createdById: input.createdById ?? null,
         },
       });
@@ -117,8 +123,9 @@ export class HomepageService {
     );
   }
 
-  async list() {
+  async list(params: { locale?: 'en' | 'ar' } = {}) {
     const sections = await db.homepageSection.findMany({
+      ...(params.locale ? { where: { locale: params.locale } } : {}),
       // `createdAt` breaks ties so newly-created sections (all default order 0) stay stable.
       orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
     });

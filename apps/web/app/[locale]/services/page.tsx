@@ -19,7 +19,7 @@ export default async function ServicesPage({ params }: { params: Promise<{ local
         <section className="wrap py-[clamp(48px,8vw,110px)]">
           <Reveal className="flex flex-col gap-4">
             <p className="eyebrow">{t('title')}</p>
-            <h1 className="text-[clamp(40px,7vw,100px)] text-white">{t('heading')}</h1>
+            <h1 className="text-[clamp(40px,7vw,100px)] text-fg-strong">{t('heading')}</h1>
             <p className="max-w-[40ch] text-[clamp(15px,1.3vw,18px)] text-muted">{t('sub')}</p>
           </Reveal>
         </section>

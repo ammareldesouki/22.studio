@@ -13,6 +13,7 @@
     "./roles": "./src/roles/index.ts",
     "./media": "./src/media/index.ts",
     "./clients": "./src/clients/index.ts",
+    "./budgets": "./src/budgets/index.ts",
     "./services": "./src/services/index.ts",
     "./projects": "./src/projects/index.ts",
     "./homepage": "./src/homepage/index.ts",

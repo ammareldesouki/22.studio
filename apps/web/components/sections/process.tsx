@@ -4,17 +4,18 @@ import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Reveal } from '../reveal';
 
-export function Process() {
+export function Process({ config = {} }: { config?: { title?: string } }) {
   const t = useTranslations('process');
   const ts = useTranslations('sections');
   const items = t.raw('items') as { t: string; d: string }[];
+  const heading = config.title?.trim() || ts('processHeading');
 
   return (
     <section className="relative z-[2] bg-ink-deep py-[clamp(72px,11vw,160px)]">
       <div className="wrap">
         <Reveal className="mb-[clamp(36px,5vw,64px)] flex flex-col gap-3.5">
           <p className="eyebrow">{ts('processEyebrow')}</p>
-          <h2 className="text-[clamp(32px,5.5vw,72px)] text-white">{ts('processHeading')}</h2>
+          <h2 className="text-[clamp(32px,5.5vw,72px)] text-fg-strong">{heading}</h2>
         </Reveal>
         <div className="grid gap-[clamp(18px,2vw,28px)] sm:grid-cols-2 md:grid-cols-5">
           {items.map((s, i) => (
@@ -27,7 +28,7 @@ export function Process() {
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.1 + i * 0.1 }}
               />
               <span className="font-display text-[13px] font-bold tracking-[0.1em] text-red">0{i + 1}</span>
-              <h4 className="mt-3.5 font-display text-[clamp(18px,1.8vw,26px)] font-bold text-white">{s.t}</h4>
+              <h4 className="mt-3.5 font-display text-[clamp(18px,1.8vw,26px)] font-bold text-fg-strong">{s.t}</h4>
               <p className="mt-2.5 text-sm leading-relaxed text-muted">{s.d}</p>
             </Reveal>
           ))}

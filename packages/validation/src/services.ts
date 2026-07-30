@@ -18,6 +18,7 @@ export const createServiceSchema = z.object({
   iconMediaId: z.string().uuid().optional().nullable(),
   order: z.number().int().nonnegative().optional(),
   seo: seoSchema,
+  locale: z.enum(['en', 'ar']).optional(),
 });
 
 export const updateServiceSchema = z.object({
@@ -27,6 +28,7 @@ export const updateServiceSchema = z.object({
   order: z.number().int().nonnegative().optional(),
   slug: z.string().max(500).optional(),
   seo: seoSchema,
+  locale: z.enum(['en', 'ar']).optional(),
   version: z.number().int().positive(),
 });
 

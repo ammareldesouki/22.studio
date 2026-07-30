@@ -38,22 +38,33 @@ function Counter({ value, suffix }: { value: string; suffix: string }) {
   );
 }
 
-export function Stats() {
+// Split a display value like "150+" or "4.9/5" into a numeric part (for the counter) and a suffix.
+function splitValue(v: string): { value: string; suffix: string } {
+  const m = /^\s*([\d.]+)(.*)$/.exec(v);
+  return m ? { value: m[1] ?? '0', suffix: (m[2] ?? '').trim() } : { value: '0', suffix: v };
+}
+
+export function Stats({ config = {} }: { config?: { title?: string; items?: { label?: string; value?: string }[] } }) {
   const t = useTranslations('stats');
   const ts = useTranslations('sections');
-  const items = t.raw('items') as { value: string; suffix: string; label: string }[];
+  const fallback = t.raw('items') as { value: string; suffix: string; label: string }[];
+  const items =
+    config.items && config.items.length > 0
+      ? config.items.map((it) => ({ ...splitValue(it.value ?? ''), label: it.label ?? '' }))
+      : fallback;
+  const heading = config.title?.trim() || ts('statsHeading');
 
   return (
     <section className="relative z-[2] bg-ink py-[clamp(72px,11vw,160px)]">
       <div className="wrap">
         <Reveal className="mb-[clamp(36px,5vw,64px)] flex flex-col gap-3.5">
           <p className="eyebrow">{ts('statsEyebrow')}</p>
-          <h2 className="text-[clamp(32px,5.5vw,72px)] text-white">{ts('statsHeading')}</h2>
+          <h2 className="text-[clamp(32px,5.5vw,72px)] text-fg-strong">{heading}</h2>
         </Reveal>
         <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-5">
           {items.map((s, i) => (
             <Reveal key={i} delay={i * 0.06}>
-              <div className="block font-display text-[clamp(40px,6vw,86px)] font-extrabold leading-none tracking-tight text-white">
+              <div className="block font-display text-[clamp(40px,6vw,86px)] font-extrabold leading-none tracking-tight text-fg-strong">
                 <Counter value={s.value} suffix={s.suffix} />
               </div>
               <span className="mt-3.5 block font-display text-[13px] font-medium uppercase tracking-[0.06em] text-muted">{s.label}</span>

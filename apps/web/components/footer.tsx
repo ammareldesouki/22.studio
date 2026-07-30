@@ -2,16 +2,37 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '../app/i18n/navigation';
 import { Logo } from './nav';
 
-export async function Footer() {
+interface SocialLink { label: string; href: string }
+
+const DEFAULT_SOCIAL: SocialLink[] = [{ label: 'Instagram', href: 'https://instagram.com/_22visuals' }];
+const DEFAULT_EMAIL = 'real22studio@gmail.com';
+const DEFAULT_PHONE = '+20 108 061 5075';
+
+export async function Footer({
+  social,
+  email,
+  phone,
+  siteName,
+  logoUrl,
+}: {
+  social?: SocialLink[];
+  email?: string | null;
+  phone?: string | null;
+  siteName?: string;
+  logoUrl?: string | null;
+} = {}) {
   const t = await getTranslations('footer');
   const n = await getTranslations('nav');
+  const socials = social && social.length ? social : DEFAULT_SOCIAL;
+  const contactEmail = email || DEFAULT_EMAIL;
+  const contactPhone = phone || DEFAULT_PHONE;
 
   return (
     <footer className="relative z-[2] border-t border-line bg-ink-deep py-[clamp(56px,7vw,90px)]">
       <div className="wrap">
         <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr_1.4fr]">
           <div>
-            <Logo />
+            <Logo siteName={siteName} logoUrl={logoUrl} />
             <p className="mt-5 max-w-[30ch] text-sm text-muted">{t('tagline')}</p>
           </div>
 
@@ -25,15 +46,17 @@ export async function Footer() {
 
           <div>
             <h5 className="label mb-4">{t('social')}</h5>
-            <FExt href="https://instagram.com/22studi">Instagram</FExt>
-            <FExt href="https://tiktok.com/@_22studio">TikTok</FExt>
-            <FExt href="https://vimeo.com/real22studio">Vimeo</FExt>
+            {socials.map((s) => (
+              <FExt key={s.href} href={s.href}>
+                {s.label}
+              </FExt>
+            ))}
           </div>
 
           <div>
             <h5 className="label mb-4">{t('startProject')}</h5>
-            <FExt href="mailto:real22studio@gmail.com">real22studio@gmail.com</FExt>
-            <FExt href="tel:+201080615075">+20 108 061 5075</FExt>
+            <FExt href={`mailto:${contactEmail}`}>{contactEmail}</FExt>
+            <FExt href={`tel:${contactPhone.replace(/\s+/g, '')}`}>{contactPhone}</FExt>
           </div>
         </div>
 
@@ -48,7 +71,7 @@ export async function Footer() {
 
 function FLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <Link href={href} className="block py-1.5 text-[15px] text-[#ededec] transition-colors hover:text-red" data-cursor>
+    <Link href={href} className="block py-1.5 text-[15px] text-fg transition-colors hover:text-red" data-cursor>
       {children}
     </Link>
   );
@@ -56,7 +79,7 @@ function FLink({ href, children }: { href: string; children: React.ReactNode }) 
 
 function FExt({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <a href={href} className="block py-1.5 text-[15px] text-[#ededec] transition-colors hover:text-red" data-cursor>
+    <a href={href} className="block py-1.5 text-[15px] text-fg transition-colors hover:text-red" data-cursor>
       {children}
     </a>
   );

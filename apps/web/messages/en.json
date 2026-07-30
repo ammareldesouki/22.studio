@@ -1,4 +1,7 @@
 {
+  "intro": {
+    "tagline": "We make your visuals hit harder."
+  },
   "nav": {
     "work": "Work",
     "services": "Services",
@@ -114,11 +117,11 @@
   },
   "about": {
     "title": "About",
-    "heading": "We make video that moves markets.",
-    "mission": "Mission",
-    "missionBody": "We create high-performing videos that drive real business results — more sales for brands and more clients for creators.",
-    "vision": "Vision",
-    "visionBody": "To be the creative studio that turns every brief into content that converts — whether the goal is sales, growth, or brand recognition.",
+    "heading": "100+ brands, one AI video studio.",
+    "mission": "Studio",
+    "missionBody": "Founded by Abdelrahman Amr Adel, 22 Studio has worked with 100+ brands — producing video editing, AI-generated video, motion graphics, and creative direction across fashion, streetwear, product, and lifestyle.",
+    "vision": "What sets us apart",
+    "visionBody": "Photorealistic, cinematic AI video with a consistent visual style across every brand campaign — the look that makes our work unmistakable.",
     "values": "Core values"
   },
   "contact": {
@@ -129,6 +132,8 @@
     "name": "Your name",
     "email": "Email",
     "message": "Tell us about your project",
+    "budget": "Budget",
+    "budgetPlaceholder": "Select your budget (optional)",
     "send": "Send message",
     "sending": "Sending…",
     "sent": "Message sent — we'll be in touch.",

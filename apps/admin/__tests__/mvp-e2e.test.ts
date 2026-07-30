@@ -34,10 +34,10 @@ describe.skipIf(!RUN)('SC-001 MVP integration (real Postgres)', () => {
     const { servicesService } = await import('@studioflow/core/services');
     const { mediaService } = await import('@studioflow/core/media');
     // Order matters: the project holds the (restricted) refs, so it goes first.
-    if (created.projectId) await projectsService.delete(created.projectId).catch(() => {});
-    if (created.mediaId) await mediaService.delete(created.mediaId).catch(() => {});
-    if (created.clientId) await clientsService.delete(created.clientId).catch(() => {});
-    if (created.serviceId) await servicesService.delete(created.serviceId).catch(() => {});
+    if (created.projectId) await projectsService.delete(created.projectId).catch(() => undefined);
+    if (created.mediaId) await mediaService.delete(created.mediaId).catch(() => undefined);
+    if (created.clientId) await clientsService.delete(created.clientId).catch(() => undefined);
+    if (created.serviceId) await servicesService.delete(created.serviceId).catch(() => undefined);
   }, 30_000);
 
   it('media → client → service → project → publish, against the real DB', async () => {

@@ -15,6 +15,7 @@ export interface SettingsRecord {
   id: string;
   siteName: string;
   logoId: string | null;
+  faviconId: string | null;
   socialLinks: Record<string, string>;
   seoDefaults: Record<string, unknown> | null;
   analyticsIds: Record<string, string>;
@@ -29,6 +30,7 @@ function mapSettings(row: Record<string, unknown>): SettingsRecord {
     id: row.id as string,
     siteName: row.siteName as string,
     logoId: (row.logoId as string) ?? null,
+    faviconId: (row.faviconId as string) ?? null,
     socialLinks: (row.socialLinks as Record<string, string>) ?? {},
     seoDefaults: (row.seoDefaults as Record<string, unknown>) ?? null,
     analyticsIds: (row.analyticsIds as Record<string, string>) ?? {},
@@ -43,6 +45,7 @@ const SETTINGS_SELECT = {
   id: true,
   siteName: true,
   logoId: true,
+  faviconId: true,
   socialLinks: true,
   seoDefaults: true,
   analyticsIds: true,
@@ -67,6 +70,7 @@ export class SettingsService {
   async update(input: {
     siteName?: string;
     logoId?: string | null;
+    faviconId?: string | null;
     socialLinks?: Record<string, string>;
     seoDefaults?: Record<string, unknown>;
     analyticsIds?: Record<string, string>;
@@ -76,14 +80,17 @@ export class SettingsService {
     // Materialize the singleton so a first-ever PATCH (before any GET) works instead of 404.
     await this.get();
 
-    if (input.logoId) {
-      const media = await db.media.findUnique({ where: { id: input.logoId }, select: { id: true } });
-      if (!media) throw new SettingsError('Unknown logo media reference', 'INVALID_REF', 400);
+    for (const [field, id] of [['logo', input.logoId], ['favicon', input.faviconId]] as const) {
+      if (id) {
+        const media = await db.media.findUnique({ where: { id }, select: { id: true } });
+        if (!media) throw new SettingsError(`Unknown ${field} media reference`, 'INVALID_REF', 400);
+      }
     }
 
     const data: Record<string, unknown> = {};
     if (input.siteName !== undefined) data.siteName = input.siteName;
     if ('logoId' in input) data.logoId = input.logoId ?? null;
+    if ('faviconId' in input) data.faviconId = input.faviconId ?? null;
     if (input.socialLinks !== undefined) data.socialLinks = input.socialLinks as never;
     if (input.seoDefaults !== undefined) data.seoDefaults = input.seoDefaults as never;
     if (input.analyticsIds !== undefined) data.analyticsIds = input.analyticsIds as never;

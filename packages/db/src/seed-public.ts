@@ -49,7 +49,7 @@ function slugFor(base: string, locale: L) {
 async function upsertClient(base: string, name: string, website: string, locale: L, order: number) {
   const slug = slugFor(base, locale);
   return db.client.upsert({
-    where: { slug },
+    where: { slug_locale: { slug, locale } },
     update: { name, status: 'PUBLISHED', publishedAt: new Date(), locale },
     create: { name, slug, website, order, status: 'PUBLISHED', publishedAt: new Date(), locale },
     select: { id: true },
@@ -59,7 +59,7 @@ async function upsertClient(base: string, name: string, website: string, locale:
 async function upsertService(base: string, name: string, description: string, locale: L, order: number) {
   const slug = slugFor(base, locale);
   return db.service.upsert({
-    where: { slug },
+    where: { slug_locale: { slug, locale } },
     update: { name, description, status: 'PUBLISHED', publishedAt: new Date(), locale },
     create: { name, description, slug, order, status: 'PUBLISHED', publishedAt: new Date(), locale },
     select: { id: true },
@@ -86,7 +86,7 @@ async function main() {
     for (const p of PROJECTS) {
       const slug = slugFor(p.base, locale);
       const content = p[locale];
-      const existing = await db.project.findUnique({ where: { slug }, select: { id: true } });
+      const existing = await db.project.findUnique({ where: { slug_locale: { slug, locale } }, select: { id: true } });
       const data = {
         title: content.title, overview: content.overview, challenge: content.challenge,
         solution: content.solution, results: content.results, featured: p.featured,

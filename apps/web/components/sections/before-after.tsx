@@ -7,8 +7,9 @@ import { Reveal } from '../reveal';
 const SCENE =
   'radial-gradient(40% 60% at 72% 22%, rgba(255,210,120,0.9), transparent 60%), radial-gradient(60% 80% at 20% 90%, rgba(60,120,180,0.7), transparent 60%), linear-gradient(180deg,#2a3550,#0f1420 70%,#0a0d16)';
 
-export function BeforeAfter() {
+export function BeforeAfter({ config = {} }: { config?: { title?: string } }) {
   const t = useTranslations('sections');
+  const heading = config.title?.trim() || t('baHeading');
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState(50);
   const dragging = useRef(false);
@@ -24,7 +25,7 @@ export function BeforeAfter() {
       <div className="wrap">
         <Reveal className="mb-[clamp(36px,5vw,64px)] flex flex-col gap-3.5">
           <p className="eyebrow">{t('baEyebrow')}</p>
-          <h2 className="max-w-[18ch] text-[clamp(32px,5.5vw,72px)] text-white">{t('baHeading')}</h2>
+          <h2 className="max-w-[18ch] text-[clamp(32px,5.5vw,72px)] text-white">{heading}</h2>
         </Reveal>
         <Reveal>
           <div

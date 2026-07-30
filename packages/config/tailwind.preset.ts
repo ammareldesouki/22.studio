@@ -1,21 +1,26 @@
 import type { Config } from 'tailwindcss';
 
 // 22 STUDIO brand system (docs/22studio_brand_guidelines + docs/design/public-site-design-system.md).
-// Dark-first, disciplined red accent. Fonts are wired via CSS variables set by next/font.
+// Disciplined red accent, theme-aware. The neutral palette is driven by CSS variables (see
+// apps/web globals.css) so the same tokens resolve to dark or light per [data-theme]. The red
+// accent is brand-fixed and identical in both themes.
 const preset: Partial<Config> = {
   theme: {
     extend: {
       colors: {
-        ink: '#111111',
-        'ink-deep': '#0d0d0f',
-        card: '#1a1a1a',
-        'card-2': '#202025',
+        ink: 'rgb(var(--bg) / <alpha-value>)',
+        'ink-deep': 'rgb(var(--bg-deep) / <alpha-value>)',
+        card: 'rgb(var(--card) / <alpha-value>)',
+        'card-2': 'rgb(var(--card-2) / <alpha-value>)',
+        // Primary + strong foreground text (replaces literal text-white for themeable text).
+        fg: 'rgb(var(--fg) / <alpha-value>)',
+        'fg-strong': 'rgb(var(--fg-strong) / <alpha-value>)',
         red: {
           DEFAULT: '#e8192c',
           dim: '#b3111f',
         },
-        line: 'rgba(255,255,255,0.10)',
-        muted: '#8b8a83',
+        line: 'rgb(var(--line-rgb) / 0.10)',
+        muted: 'rgb(var(--muted) / <alpha-value>)',
         light: '#f5f5f5',
         bordergray: '#cccccc',
         // keep a `primary` alias so any stray references resolve to the brand red
