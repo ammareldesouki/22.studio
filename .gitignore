@@ -35,9 +35,12 @@ dist/
 build/
 out/
 lib/
-# apps/admin/lib is source (session/media guards imported by every route), not build output.
+# apps/admin/lib and apps/web/lib are SOURCE (route guards, poster/media-embed helpers
+# imported by pages), not build output — keep them tracked.
 !apps/admin/lib/
 !apps/admin/lib/**
+!apps/web/lib/
+!apps/web/lib/**
 *.tsbuildinfo
 next-env.d.ts
 
