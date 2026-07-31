@@ -40,8 +40,10 @@ const nextConfig: NextConfig = {
     '@studioflow/ui',
     '@studioflow/validation',
   ],
-  // Prisma ships engine binaries — keep it external so it's require()'d at runtime, not bundled.
-  serverExternalPackages: ['@prisma/client'],
+  // Prisma ships engine binaries — keep BOTH the client and the generated `.prisma/client`
+  // external so the query-engine .so.node is require()'d from node_modules at runtime rather
+  // than bundled (bundling drops the engine → "Query Engine not found" on Vercel).
+  serverExternalPackages: ['@prisma/client', '.prisma/client'],
 };
 
 export default nextConfig;
