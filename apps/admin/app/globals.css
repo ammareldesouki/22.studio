@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* The shared Tailwind preset resolves neutral tokens (ink/card/fg/muted/line) from CSS
+   variables. The public site swaps these per theme; the admin is dark-only, so define the
+   dark palette once here. */
+:root {
+  --bg: 17 17 17;
+  --bg-deep: 13 13 15;
+  --card: 26 26 26;
+  --card-2: 32 32 37;
+  --fg: 237 237 236;
+  --fg-strong: 255 255 255;
+  --muted: 139 138 131;
+  --line-rgb: 255 255 255;
+  color-scheme: dark;
+}
+
 @layer base {
   body {
     @apply bg-ink text-[#e7e7e8] font-sans antialiased;
