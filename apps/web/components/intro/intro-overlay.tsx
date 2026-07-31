@@ -67,12 +67,15 @@ export function IntroOverlay() {
 
   return (
     <div ref={overlayRef} className="fixed inset-0 z-[200] bg-ink" aria-hidden="true">
-      {/* Reveal: large logo on a white block + one-line tagline (fades in after the scrub). */}
-      <div ref={headingRef} className="absolute inset-0 flex flex-col items-center justify-center gap-8 px-6 text-fg-strong opacity-0">
+      {/* Reveal: logo on a white block + tagline (fades in after the scrub). */}
+      <div ref={headingRef} className="absolute inset-0 flex flex-col items-center justify-center gap-7 px-6 text-fg-strong opacity-0 sm:gap-8">
         <div className="rounded-3xl bg-white p-4 shadow-2xl">
-          <img src="/logo.png" alt="22 Studio" className="h-20 w-20 object-contain sm:h-[90px] sm:w-[90px]" />
+          <img src="/intro-logo.png" alt="22 Studio" className="h-20 w-20 object-contain sm:h-[90px] sm:w-[90px]" />
         </div>
-        <div className="whitespace-nowrap text-center text-[40px] font-bold leading-tight">{t('tagline')}</div>
+        {/* Wraps + scales down on mobile so it never overflows; one line at 40px on ≥sm. */}
+        <div className="max-w-[14ch] text-center text-[clamp(24px,7vw,40px)] font-bold leading-tight sm:max-w-none sm:whitespace-nowrap">
+          {t('tagline')}
+        </div>
       </div>
 
       {/* Timeline: clip track + waveform + scrubbing playhead (centered, fixed-direction). */}
