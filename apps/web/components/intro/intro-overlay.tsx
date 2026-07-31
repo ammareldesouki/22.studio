@@ -69,7 +69,7 @@ export function IntroOverlay() {
     <div ref={overlayRef} className="fixed inset-0 z-[200] bg-ink" aria-hidden="true">
       {/* Reveal: logo (no card, sits on the dark bg) + tagline, fades in after the scrub. */}
       <div ref={headingRef} className="absolute inset-0 flex flex-col items-center justify-center gap-7 px-6 text-fg-strong opacity-0 sm:gap-8">
-        <img src="/intro-logo.png" alt="22 Studio" className="h-32 w-32 rounded-2xl object-contain sm:h-40 sm:w-40" />
+        <img src="/intro-logo.png" alt="22 Studio" className="h-32 w-auto object-contain sm:h-40" />
         {/* Wraps + scales down on mobile so it never overflows; one line at 40px on ≥sm. */}
         <div className="max-w-[14ch] text-center text-[clamp(24px,7vw,40px)] font-bold leading-tight sm:max-w-none sm:whitespace-nowrap">
           {t('tagline')}
