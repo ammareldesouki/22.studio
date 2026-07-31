@@ -6,6 +6,9 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  // Vercel serverless runs on Amazon Linux (OpenSSL 3.0.x); generate that engine too so it
+  // exists in node_modules. `native` keeps local dev (macOS/Linux) working.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 // ── Enums ────────────────────────────────────────────────────────────────

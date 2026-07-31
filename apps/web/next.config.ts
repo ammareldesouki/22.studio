@@ -14,6 +14,12 @@ const r2Host = (() => {
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname, '../../'),
+  // Prisma's query-engine .node binary is loaded dynamically, so Next's tracer can't detect it
+  // and it gets left out of the serverless bundle ("Query Engine not found" at runtime). Force
+  // the whole generated client dir (engine included) into every function bundle.
+  outputFileTracingIncludes: {
+    '/**/*': ['../../node_modules/.pnpm/@prisma+client@*/node_modules/.prisma/client/**/*'],
+  },
   transpilePackages: [
     '@studioflow/shared',
     '@studioflow/types',
