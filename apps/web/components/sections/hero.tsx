@@ -24,7 +24,7 @@ export function Hero({ config = {} }: { config?: HeroConfig }) {
   const bg = config.backgroundUrl || null;
 
   return (
-    <section className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-ink pb-[clamp(48px,6vw,80px)]">
+    <section className="relative isolate flex min-h-[100svh] flex-col justify-end overflow-hidden bg-ink pb-[clamp(48px,6vw,80px)]">
       {bg ? (
         <>
           <img src={bg} alt="" className="absolute inset-0 -z-20 h-full w-full object-cover" />
