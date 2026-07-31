@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import { publicContent, type Locale } from '@studioflow/core/public';
+import { Link } from '../../app/i18n/navigation';
 import { ProjectTile } from '../project-tile';
 import { Reveal } from '../reveal';
 
@@ -33,6 +34,18 @@ export async function Featured({
               <ProjectTile key={p.id} project={p} viewLabel={tc('viewCase')} />
             ))}
           </div>
+        </Reveal>
+        <Reveal className="mt-[clamp(28px,4vw,52px)] flex justify-center">
+          <Link
+            href="/work"
+            className="group inline-flex items-center gap-2.5 font-display text-[15px] font-semibold uppercase tracking-[0.1em] text-fg-strong transition-colors hover:text-red"
+            data-cursor
+          >
+            {t('workViewAll')}
+            <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5">
+              ↗
+            </span>
+          </Link>
         </Reveal>
       </div>
     </section>
