@@ -13,7 +13,7 @@ export async function CtaBanner({ config = {} }: { config?: CtaConfig }) {
   const primaryLink = config.buttonLink?.trim() || '/contact';
 
   return (
-    <section data-theme="dark" className="relative z-[2] overflow-hidden bg-ink py-[clamp(80px,12vw,180px)] text-center">
+    <section data-theme="dark" className="relative z-[2] overflow-hidden bg-ink py-[clamp(56px,8vw,110px)] text-center">
       <div
         className="absolute inset-0 -z-10"
         style={{ background: 'radial-gradient(60% 100% at 50% 120%, rgba(232,25,44,0.32), transparent 60%)' }}

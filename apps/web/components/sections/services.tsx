@@ -18,7 +18,7 @@ export async function Services({
   const heading = config.title?.trim() || t('servicesHeading');
 
   return (
-    <section className="relative z-[2] bg-ink py-[clamp(72px,11vw,160px)]">
+    <section className="relative z-[2] bg-ink py-[clamp(44px,6vw,88px)]">
       <div className="wrap">
         <Reveal className="mb-[clamp(36px,5vw,64px)] flex flex-col gap-3.5">
           <p className="eyebrow">{t('servicesEyebrow')}</p>
