@@ -11,7 +11,7 @@ export function Logo({ onClick, siteName, logoUrl }: { onClick?: () => void; sit
   return (
     <Link href="/" onClick={onClick} className="flex items-center gap-3" data-cursor aria-label={`${name} home`}>
       {/* CMS-uploaded logo when set, otherwise the real 22 Studio mark shipped in /public. */}
-      <img src={logoUrl || '/logo.png'} alt={name} className="h-10 w-10 rounded-md border border-red/60 object-cover" />
+      <img src={logoUrl || '/logo.png'} alt={name} className="h-14 w-14 rounded-md object-contain" />
       <span className="font-display text-[19px] font-bold tracking-[0.04em] text-fg-strong">{name}</span>
     </Link>
   );
