@@ -34,8 +34,8 @@ export function Hero({ config = {} }: { config?: HeroConfig }) {
         <div className="hero-bg absolute inset-0 -z-20" />
       )}
 
-      {/* Signature red ember glow — visible in both light and dark. */}
-      <div className="hero-glow absolute -top-[22vw] end-[-14vw] -z-10 h-[70vw] w-[70vw] rounded-full" aria-hidden="true" />
+      {/* Signature circular red glow bleeding from the top-right corner (both themes). */}
+      <div className="hero-glow absolute -top-[26vw] end-[-18vw] -z-10 h-[85vw] w-[85vw] rounded-full" aria-hidden="true" />
 
       <div className="wrap pt-32">
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.3 }} className="eyebrow mb-6">

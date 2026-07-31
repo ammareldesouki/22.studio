@@ -139,20 +139,22 @@ html {
   /* Hero backdrop (no CMS media) — themes with the site: deep charcoal + ember in dark,
      soft light wash + faint red in light. */
   .hero-bg {
-    background: radial-gradient(120% 90% at 78% 8%, #241014 0%, #141416 42%, #0e0e10 100%);
+    background: radial-gradient(125% 105% at 82% 0%, #22101400 0%, #120f12 46%, #0a0a0c 100%);
+    background-color: #0a0a0c;
   }
   [data-theme='light'] .hero-bg {
-    background: radial-gradient(120% 90% at 78% 8%, #f7f7f8 0%, #fbfbfc 46%, #ffffff 100%);
+    background: radial-gradient(125% 105% at 82% 0%, #fdeff1 0%, #f8f8fa 48%, #ffffff 100%);
+    background-color: #ffffff;
   }
-  /* The signature red ember glow. A touch stronger + tighter in light mode so it stays
-     clearly visible against the bright hero. */
+  /* Signature circular red glow bleeding from the top-right corner (see hero.tsx for size
+     + position). Layered stops give a soft, deep bloom; visible in dark and light. */
   .hero-glow {
-    background: radial-gradient(circle, rgba(232, 25, 44, 0.42), transparent 62%);
-    filter: blur(30px);
+    background: radial-gradient(circle, rgba(232, 25, 44, 0.6) 0%, rgba(232, 25, 44, 0.28) 34%, transparent 68%);
+    filter: blur(50px);
   }
   [data-theme='light'] .hero-glow {
-    background: radial-gradient(circle, rgba(232, 25, 44, 0.5), transparent 58%);
-    filter: blur(26px);
+    background: radial-gradient(circle, rgba(232, 25, 44, 0.42) 0%, rgba(232, 25, 44, 0.16) 36%, transparent 66%);
+    filter: blur(46px);
   }
 }
 
