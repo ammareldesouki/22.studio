@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { Link } from '../../app/i18n/navigation';
 import { CmsLink } from '../cms-link';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -68,10 +67,6 @@ export function Hero({ config = {} }: { config?: HeroConfig }) {
           <CmsLink href={ctaLink} className="btn btn-red rounded-[2px]" cursor="Go">
             {ctaText}
           </CmsLink>
-          <Link href="/work" className="flex items-center gap-2.5 text-sm text-muted" data-cursor>
-            <span className="inline-block h-4 w-4 rounded-full" style={{ background: 'linear-gradient(90deg, #555 50%, #e8192c 50%)' }} />
-            {t('watch')}
-          </Link>
         </motion.div>
       </div>
 
