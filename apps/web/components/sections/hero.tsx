@@ -7,6 +7,7 @@ import { CmsLink } from '../cms-link';
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 interface HeroConfig {
+  eyebrow?: string;
   headline?: string;
   subheadline?: string;
   ctaText?: string;
@@ -16,6 +17,10 @@ interface HeroConfig {
 
 export function Hero({ config = {} }: { config?: HeroConfig }) {
   const t = useTranslations('hero');
+  // Eyebrow/tagline is CMS-editable: when the `eyebrow` key is set we use it verbatim
+  // (an empty string means the admin deliberately hid it); when the key is absent we
+  // fall back to the designed default from the translations.
+  const eyebrow = (config.eyebrow === undefined ? t('eyebrow') : config.eyebrow).trim();
   const title = config.headline?.trim() || t('title');
   const sub = config.subheadline?.trim() || t('sub');
   const ctaText = config.ctaText?.trim() || t('cta');
@@ -37,9 +42,11 @@ export function Hero({ config = {} }: { config?: HeroConfig }) {
       <div className="hero-glow absolute -top-[26vw] end-[-18vw] -z-10 h-[85vw] w-[85vw] rounded-full" aria-hidden="true" />
 
       <div className="wrap pt-32">
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.3 }} className="eyebrow mb-6">
-          {t('eyebrow')}
-        </motion.p>
+        {eyebrow ? (
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.3 }} className="eyebrow mb-6">
+            {eyebrow}
+          </motion.p>
+        ) : null}
 
         <h1 className="text-[clamp(44px,8.2vw,120px)] text-fg-strong">
           <span className="block overflow-hidden pb-[0.12em]">

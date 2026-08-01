@@ -17,6 +17,13 @@ interface Section {
 
 const SECTION_TYPES = ['HERO', 'SERVICES', 'PROJECTS', 'CLIENTS', 'STATS', 'TESTIMONIALS', 'FAQ', 'CTA', 'BEFORE_AFTER', 'PROCESS'] as const;
 
+// Designed default tagline (mirrors the web app's messages). Used to seed the editable HERO
+// eyebrow field so the admin sees the current text and can edit it or clear it (clearing hides it).
+const DEFAULT_HERO_EYEBROW: Record<'en' | 'ar', string> = {
+  en: 'Creative Video Studio — Editing · AI Visuals · Creative Direction',
+  ar: 'استوديو فيديو إبداعي — مونتاج · مرئيات بالذكاء الاصطناعي · إدارة إبداعية',
+};
+
 export default function HomepagePage() {
   const { api } = useAuth();
   const toast = useToast();
@@ -171,6 +178,7 @@ export default function HomepagePage() {
       {editing && (
         <SectionConfig
           section={editing}
+          locale={lang}
           onClose={() => setEditing(null)}
           onSaved={() => {
             setEditing(null);
@@ -227,10 +235,16 @@ function CfgNum({ cfg, setK, k, label }: { cfg: Cfg; setK: (k: string, v: unknow
   );
 }
 
-function SectionConfig({ section, onClose, onSaved }: { section: Section; onClose: () => void; onSaved: () => void }) {
+function SectionConfig({ section, locale, onClose, onSaved }: { section: Section; locale: 'en' | 'ar'; onClose: () => void; onSaved: () => void }) {
   const { api } = useAuth();
   const toast = useToast();
-  const [cfg, setCfg] = useState<Cfg>(section.config ?? {});
+  const [cfg, setCfg] = useState<Cfg>(() => {
+    const c: Cfg = { ...(section.config ?? {}) };
+    // Seed the HERO eyebrow with the designed default when it has never been set, so the admin
+    // sees the current tagline and can edit or clear it. An explicit empty string means "hidden".
+    if (section.type === 'HERO' && c.eyebrow === undefined) c.eyebrow = DEFAULT_HERO_EYEBROW[locale];
+    return c;
+  });
   const [busy, setBusy] = useState(false);
 
   const setK = (k: string, v: unknown) => setCfg((c) => ({ ...c, [k]: v }));
@@ -240,6 +254,12 @@ function SectionConfig({ section, onClose, onSaved }: { section: Section; onClos
     // Drop empty strings so optional fields stay unset (and pass htmlSafe/url validation).
     const clean: Cfg = {};
     for (const [k, v] of Object.entries(cfg)) {
+      // Keep an empty `eyebrow` as "" — that is how the admin records a hidden hero tagline.
+      // (Every other optional field is dropped when empty so it falls back to its default.)
+      if (k === 'eyebrow') {
+        clean[k] = typeof v === 'string' ? v : '';
+        continue;
+      }
       if (v === '' || v === undefined || v === null) continue;
       clean[k] = v;
     }
@@ -261,6 +281,7 @@ function SectionConfig({ section, onClose, onSaved }: { section: Section; onClos
       <div className="flex flex-col gap-4">
         {section.type === 'HERO' && (
           <>
+            <CfgText cfg={cfg} setK={setK} k="eyebrow" label="Eyebrow / tagline (leave empty to hide)" />
             <CfgText cfg={cfg} setK={setK} k="headline" label="Headline" />
             <CfgText cfg={cfg} setK={setK} k="subheadline" label="Subheadline" area />
             <CfgText cfg={cfg} setK={setK} k="ctaText" label="CTA text" />

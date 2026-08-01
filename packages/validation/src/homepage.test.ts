@@ -50,4 +50,16 @@ describe('validateSectionConfig — raw HTML rejection (FR-019 / SC-006)', () =>
     const r = validateSectionConfig('SERVICES', { title: 'Editing & Creative Direction' });
     expect(r.success).toBe(true);
   });
+
+  it('keeps an edited hero eyebrow/tagline', () => {
+    const r = validateSectionConfig('HERO', { eyebrow: 'Creative Video Studio — Editing · AI Visuals' });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.eyebrow).toBe('Creative Video Studio — Editing · AI Visuals');
+  });
+
+  it('keeps an empty hero eyebrow as "" (the admin hiding the tagline)', () => {
+    const r = validateSectionConfig('HERO', { eyebrow: '' });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.eyebrow).toBe('');
+  });
 });

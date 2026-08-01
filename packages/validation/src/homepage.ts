@@ -3,6 +3,9 @@ import { htmlSafe as safe, httpUrl as safeUrl } from './shared';
 
 const heroConfig = z.object({
   // All optional: an empty/partial config falls back to the site's themed defaults.
+  // `eyebrow` is special: an empty string is kept and means "hide the tagline" (an absent
+  // key falls back to the designed default), so it must allow "" as well as real text.
+  eyebrow: safe(200).optional(),
   headline: safe(200).optional(),
   subheadline: safe(500).optional(),
   ctaText: safe(60).optional(),
