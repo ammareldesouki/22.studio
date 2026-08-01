@@ -104,7 +104,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ locale
             const info = classifyMedia(m.url, m.type);
             return (
               <Reveal key={i} className="mb-[clamp(16px,2vw,28px)] break-inside-avoid">
-                <div className="relative overflow-hidden bg-card" style={{ aspectRatio: info.kind === 'image' ? aspect : '16 / 9' }}>
+                <div className={`relative overflow-hidden ${info.kind === 'image' ? 'bg-card' : 'bg-ink'}`} style={{ aspectRatio: info.kind === 'image' ? aspect : '16 / 9' }}>
                   {info.kind === 'image' && (
                     <Image src={m.url} alt={m.alt || p.title} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" />
                   )}
