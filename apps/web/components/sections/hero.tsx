@@ -76,11 +76,6 @@ export function Hero({ config = {} }: { config?: HeroConfig }) {
           </CmsLink>
         </motion.div>
       </div>
-
-      <div className="wrap mt-16 flex items-center justify-between">
-        <span className="label !text-muted">↓ {t('scroll')}</span>
-        <span className="label !text-muted">REEL 001 — SHOWREEL · 00:00</span>
-      </div>
     </section>
   );
 }
