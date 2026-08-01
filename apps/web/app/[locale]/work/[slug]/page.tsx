@@ -119,7 +119,14 @@ export default async function ProjectPage({ params }: { params: Promise<{ locale
                     />
                   )}
                   {info.kind === 'file' && info.fileUrl && (
-                    <video src={info.fileUrl} controls playsInline className="absolute inset-0 h-full w-full object-cover" />
+                    <video
+                      src={info.fileUrl}
+                      poster={m.posterUrl ?? undefined}
+                      controls
+                      playsInline
+                      preload="metadata"
+                      className="absolute inset-0 h-full w-full bg-ink object-cover"
+                    />
                   )}
                 </div>
               </Reveal>

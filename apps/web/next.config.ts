@@ -41,6 +41,9 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // Cache optimised posters/thumbnails for a year so reloads reuse them instead of
+    // re-fetching (which is what made tiles flash their placeholder on every reload).
+    minimumCacheTTL: 31536000,
     // R2 hosts are explicit; the wildcards allow images added to the CMS by external link
     // (e.g. a logo or poster URL, or a YouTube thumbnail) to be optimised by next/image.
     remotePatterns: [

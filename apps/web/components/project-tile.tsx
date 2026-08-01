@@ -39,10 +39,11 @@ export function ProjectTile({ project, viewLabel }: { project: ProjectCard; view
       className="group relative mb-[clamp(16px,2vw,28px)] block break-inside-avoid overflow-hidden bg-card"
       style={{ aspectRatio: ratio }}
     >
-      {/* Still frame (or generated gradient) */}
+      {/* Still frame over a branded gradient — the gradient shows instantly so a slow-loading
+          poster/video never flashes the near-white card background underneath. */}
       <div
         className="absolute inset-0 transition-transform duration-[1100ms] ease-expo group-hover:scale-[1.03]"
-        style={still ? undefined : { background: poster(project.slug) }}
+        style={{ background: poster(project.slug) }}
       >
         {still && <Image src={still} alt={cover?.alt || project.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />}
       </div>
