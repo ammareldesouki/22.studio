@@ -2,6 +2,7 @@ import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { publicContent, type Locale } from '@studioflow/core/public';
 import { ProjectTile } from '../../../components/project-tile';
 import { Reveal } from '../../../components/reveal';
+import { withCoverPosters } from '../../../lib/vimeo';
 
 export const revalidate = 300;
 
@@ -11,7 +12,8 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
   const l = locale as Locale;
   const t = await getTranslations('work');
   const tc = await getTranslations('common');
-  const { items } = await publicContent.listProjects({ locale: l, limit: 24 });
+  const { items: raw } = await publicContent.listProjects({ locale: l, limit: 24 });
+  const items = await withCoverPosters(raw);
 
   return (
     <div className="pt-32">

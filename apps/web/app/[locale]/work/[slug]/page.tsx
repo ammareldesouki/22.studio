@@ -7,6 +7,7 @@ import { Link } from '../../../i18n/navigation';
 import { Reveal } from '../../../../components/reveal';
 import { poster } from '../../../../lib/poster';
 import { classifyMedia, posterFor } from '../../../../lib/media-embed';
+import { withVimeoPoster } from '../../../../lib/vimeo';
 
 export const revalidate = 300;
 
@@ -28,10 +29,12 @@ export default async function ProjectPage({ params }: { params: Promise<{ locale
   if (!p) notFound();
   const t = await getTranslations('project');
   const year = p.publishedAt ? new Date(p.publishedAt).getFullYear() : null;
-  const cover = p.media[0];
+  // Resolve Vimeo thumbnails server-side so cover + gallery videos show their real frame
+  // instantly instead of a blank box while the player loads.
+  const gallery = p.media.length > 0 ? await Promise.all(p.media.map((m) => withVimeoPoster(m))) : null;
+  const cover = gallery?.[0] ?? null;
   const coverPoster = cover ? cover.posterUrl || posterFor(cover.url, cover.type) : null;
   const coverIsVideo = cover ? classifyMedia(cover.url, cover.type).kind !== 'image' : false;
-  const gallery = p.media.length > 0 ? p.media : null;
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
@@ -109,14 +112,19 @@ export default async function ProjectPage({ params }: { params: Promise<{ locale
                     <Image src={m.url} alt={m.alt || p.title} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" />
                   )}
                   {(info.kind === 'youtube' || info.kind === 'vimeo') && info.embedUrl && (
-                    <iframe
-                      src={info.embedUrl}
-                      title={m.alt || p.title}
-                      className="absolute inset-0 h-full w-full"
-                      loading="lazy"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
+                    <>
+                      {(m.posterUrl || info.thumbUrl) && (
+                        <Image src={(m.posterUrl || info.thumbUrl) as string} alt={m.alt || p.title} fill sizes="(max-width:768px) 100vw, 50vw" className="object-cover" />
+                      )}
+                      <iframe
+                        src={info.embedUrl}
+                        title={m.alt || p.title}
+                        className="absolute inset-0 h-full w-full"
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </>
                   )}
                   {info.kind === 'file' && info.fileUrl && (
                     <video

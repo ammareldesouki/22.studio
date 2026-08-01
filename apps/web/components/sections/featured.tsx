@@ -3,6 +3,7 @@ import { publicContent, type Locale } from '@studioflow/core/public';
 import { Link } from '../../app/i18n/navigation';
 import { ProjectTile } from '../project-tile';
 import { Reveal } from '../reveal';
+import { withCoverPosters } from '../../lib/vimeo';
 
 export async function Featured({
   locale,
@@ -13,12 +14,13 @@ export async function Featured({
 }) {
   const t = await getTranslations('sections');
   const tc = await getTranslations('common');
-  const { items } = await publicContent.listProjects({
+  const { items: raw } = await publicContent.listProjects({
     locale,
     featured: config.featured ?? true,
     limit: config.maxItems && config.maxItems > 0 ? config.maxItems : 5,
   });
-  if (items.length === 0) return null;
+  if (raw.length === 0) return null;
+  const items = await withCoverPosters(raw);
   const heading = config.title?.trim() || t('workHeading');
 
   return (
