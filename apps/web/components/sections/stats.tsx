@@ -7,7 +7,10 @@ import { Reveal } from '../reveal';
 
 function Counter({ value, suffix }: { value: string; suffix: string }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: '-20%' });
+  // Margin only shrinks the trigger zone vertically. Using a bare '-20%' also shrinks it
+  // left/right, which pushed the leftmost stat into a horizontal dead-zone so its counter
+  // never fired. Vertical-only keeps the "count when scrolled into view" behaviour for all.
+  const inView = useInView(ref, { once: true, margin: '0px 0px -20% 0px' });
   const [n, setN] = useState(0);
   const target = parseFloat(value) || 0;
 

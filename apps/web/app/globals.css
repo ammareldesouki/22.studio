@@ -226,8 +226,21 @@ html {
   }
 }
 
+/* Review cards carousel — same seamless auto-scroll as the client marquee, wider gap
+   sized for cards, slower so longer text stays readable. Pauses on hover. */
+.marquee-cards {
+  display: flex;
+  width: max-content;
+  gap: 24px;
+  animation: marq 48s linear infinite;
+}
+.marquee-cards:hover {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .grain { animation: none; }
   .marquee { animation: none; flex-wrap: wrap; justify-content: center; }
+  .marquee-cards { animation: none; }
 }
