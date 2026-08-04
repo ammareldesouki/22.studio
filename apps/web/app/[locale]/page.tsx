@@ -9,17 +9,20 @@ import { Process } from '../../components/sections/process';
 import { Stats } from '../../components/sections/stats';
 import { Faq } from '../../components/sections/faq';
 import { CtaBanner } from '../../components/sections/cta-banner';
+import { Reviews } from '../../components/sections/reviews';
 import { IntroOverlay } from '../../components/intro/intro-overlay';
 
 export const revalidate = 300;
 
 type Cfg = Record<string, unknown>;
 
-// Render one CMS section by type. Unknown/TESTIMONIALS types render nothing (no component yet).
+// Render one CMS section by type. Unknown types render nothing.
 function renderSection(type: string, config: Cfg, locale: Locale, key: string) {
   switch (type) {
     case 'HERO':
       return <Hero key={key} config={config} />;
+    case 'TESTIMONIALS':
+      return <Reviews key={key} locale={locale} config={config} />;
     case 'CLIENTS':
       return <ClientsWall key={key} locale={locale} config={config} />;
     case 'PROJECTS':
@@ -53,6 +56,7 @@ function DefaultHome({ locale }: { locale: Locale }) {
       <Process />
       <Stats />
       <Faq />
+      <Reviews locale={locale} />
       <CtaBanner />
     </>
   );

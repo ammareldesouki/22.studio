@@ -468,3 +468,18 @@ model Budget {
   @@index([order])
   @@index([active])
 }
+
+// Client reviews shown on the marketing site. Not localized — one `quote` string is shown
+// as-is on both the EN and AR sites. A light, toggleable list like Budget (no SEO/slug).
+model Review {
+  id         String   @id @default(uuid()) @db.Uuid
+  quote      String
+  authorName String
+  order      Int      @default(0)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([order])
+  @@index([active])
+}

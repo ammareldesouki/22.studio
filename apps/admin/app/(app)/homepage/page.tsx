@@ -286,6 +286,7 @@ function SectionConfig({ section, locale, onClose, onSaved }: { section: Section
             <CfgText cfg={cfg} setK={setK} k="subheadline" label="Subheadline" area />
             <CfgText cfg={cfg} setK={setK} k="ctaText" label="CTA text" />
             <CfgText cfg={cfg} setK={setK} k="ctaLink" label="CTA link" />
+            <CfgText cfg={cfg} setK={setK} k="reviewsCtaText" label="Reviews button text (leave empty to hide)" />
             <MediaField label="Background" value={(cfg.backgroundMediaId as string) ?? null} onChange={(id) => setK('backgroundMediaId', id ?? undefined)} allow="image" />
           </>
         )}
