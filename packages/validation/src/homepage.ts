@@ -10,6 +10,8 @@ const heroConfig = z.object({
   subheadline: safe(500).optional(),
   ctaText: safe(60).optional(),
   ctaLink: safeUrl().optional(),
+  // Secondary "reviews" button label; empty/absent hides the button.
+  reviewsCtaText: safe(60).optional(),
   backgroundMediaId: z.string().uuid().optional(),
 });
 

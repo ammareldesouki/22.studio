@@ -12,6 +12,7 @@ interface HeroConfig {
   subheadline?: string;
   ctaText?: string;
   ctaLink?: string;
+  reviewsCtaText?: string;
   backgroundUrl?: string | null;
 }
 
@@ -25,6 +26,9 @@ export function Hero({ config = {} }: { config?: HeroConfig }) {
   const sub = config.subheadline?.trim() || t('sub');
   const ctaText = config.ctaText?.trim() || t('cta');
   const ctaLink = config.ctaLink?.trim() || '/contact';
+  // Optional secondary button that scrolls to the reviews section. Hidden when blank —
+  // same convention as the eyebrow: an absent/empty label means "don't show it".
+  const reviewsCta = config.reviewsCtaText?.trim() ?? '';
   const bg = config.backgroundUrl || null;
 
   return (
@@ -74,6 +78,19 @@ export function Hero({ config = {} }: { config?: HeroConfig }) {
           <CmsLink href={ctaLink} className="btn btn-red rounded-[2px]" cursor="Go">
             {ctaText}
           </CmsLink>
+          {reviewsCta ? (
+            <a
+              href="#reviews"
+              className="btn btn-ghost rounded-[2px]"
+              data-cursor="Read"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              {reviewsCta}
+            </a>
+          ) : null}
         </motion.div>
       </div>
     </section>
