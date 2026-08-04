@@ -9,6 +9,7 @@ interface Review {
   id: string;
   quote: string;
   authorName: string;
+  email: string | null;
   order: number;
   active: boolean;
 }
@@ -16,11 +17,12 @@ interface Review {
 interface FormState {
   quote: string;
   authorName: string;
+  email: string;
   order: string;
   active: boolean;
 }
 
-const EMPTY: FormState = { quote: '', authorName: '', order: '0', active: true };
+const EMPTY: FormState = { quote: '', authorName: '', email: '', order: '0', active: true };
 
 export default function ReviewsPage() {
   const { api } = useAuth();
@@ -49,7 +51,7 @@ export default function ReviewsPage() {
 
   function openEdit(r: Review) {
     setEditing(r);
-    setForm({ quote: r.quote, authorName: r.authorName, order: String(r.order), active: r.active });
+    setForm({ quote: r.quote, authorName: r.authorName, email: r.email ?? '', order: String(r.order), active: r.active });
   }
 
   function closeForm() {
@@ -71,6 +73,7 @@ export default function ReviewsPage() {
     const payload = {
       quote: form.quote.trim(),
       authorName: form.authorName.trim(),
+      email: form.email.trim() || null,
       order: Number.isFinite(parseInt(form.order, 10)) ? parseInt(form.order, 10) : 0,
       active: form.active,
     };
@@ -143,6 +146,7 @@ export default function ReviewsPage() {
                 <p className="text-white">&ldquo;{r.quote}&rdquo;</p>
                 <div className="mt-1 flex flex-wrap items-center gap-2">
                   <span className="font-display font-semibold text-white">{r.authorName}</span>
+                  {r.email && <span className="chip">{r.email}</span>}
                   {!r.active && <span className="chip">hidden</span>}
                 </div>
               </div>
@@ -173,6 +177,11 @@ export default function ReviewsPage() {
             <div className="field">
               <label htmlFor="r-name">Client name</label>
               <input id="r-name" className="input" value={form.authorName} onChange={(e) => setForm({ ...form, authorName: e.target.value })} placeholder="Guy Hawkins" />
+            </div>
+            <div className="field">
+              <label htmlFor="r-email">Email (private)</label>
+              <input id="r-email" type="email" className="input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="name@example.com" />
+              <p className="mt-1 text-[12px] text-muted">Collected from public submissions. Never shown on the site.</p>
             </div>
             <div className="flex items-end gap-4">
               <div className="field w-24">

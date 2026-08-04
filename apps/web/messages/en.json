@@ -141,6 +141,16 @@
     "error": "Something went wrong. Please try again.",
     "or": "Or reach us directly"
   },
+  "reviewForm": {
+    "cta": "Leave a review",
+    "name": "Your name",
+    "email": "Your email",
+    "quote": "Write your review",
+    "submit": "Submit review",
+    "submitting": "Submitting…",
+    "sent": "Thanks — your review is now live!",
+    "error": "Something went wrong. Please try again."
+  },
   "common": {
     "viewCase": "View case",
     "view": "View",

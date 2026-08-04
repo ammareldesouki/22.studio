@@ -8,6 +8,7 @@ export interface ReviewRecord {
   id: string;
   quote: string;
   authorName: string;
+  email: string | null;
   order: number;
   active: boolean;
   createdAt: string;
@@ -18,6 +19,7 @@ const SELECT = {
   id: true,
   quote: true,
   authorName: true,
+  email: true,
   order: true,
   active: true,
   createdAt: true,
@@ -29,6 +31,7 @@ function map(row: Record<string, unknown>): ReviewRecord {
     id: row.id as string,
     quote: row.quote as string,
     authorName: row.authorName as string,
+    email: (row.email as string) ?? null,
     order: row.order as number,
     active: row.active as boolean,
     createdAt: (row.createdAt as Date).toISOString(),
@@ -72,6 +75,7 @@ export class ReviewsService {
   async create(input: {
     quote: string;
     authorName: string;
+    email?: string | null;
     order?: number;
     active?: boolean;
   }): Promise<ReviewRecord> {
@@ -79,6 +83,7 @@ export class ReviewsService {
       data: {
         quote: input.quote,
         authorName: input.authorName,
+        email: input.email ?? null,
         order: input.order ?? 0,
         active: input.active ?? true,
       },
@@ -89,7 +94,7 @@ export class ReviewsService {
 
   async update(
     id: string,
-    input: { quote?: string; authorName?: string; order?: number; active?: boolean },
+    input: { quote?: string; authorName?: string; email?: string | null; order?: number; active?: boolean },
   ): Promise<ReviewRecord> {
     const existing = await db.review.findUnique({ where: { id }, select: { id: true } });
     if (!existing) throw new ReviewsError('Review not found', 'NOT_FOUND', 404);
@@ -97,6 +102,7 @@ export class ReviewsService {
     const data: Record<string, unknown> = {};
     if (input.quote !== undefined) data.quote = input.quote;
     if (input.authorName !== undefined) data.authorName = input.authorName;
+    if ('email' in input) data.email = input.email ?? null;
     if (input.order !== undefined) data.order = input.order;
     if (input.active !== undefined) data.active = input.active;
 

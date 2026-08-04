@@ -475,6 +475,8 @@ model Review {
   id         String   @id @default(uuid()) @db.Uuid
   quote      String
   authorName String
+  // Private — collected from the public submission form, never shown on the site.
+  email      String?
   order      Int      @default(0)
   active     Boolean  @default(true)
   createdAt  DateTime @default(now())

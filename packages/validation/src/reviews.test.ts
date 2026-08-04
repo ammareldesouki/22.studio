@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { createReviewSchema, updateReviewSchema } from './reviews';
+import { createReviewSchema, updateReviewSchema, publicReviewSubmitSchema } from './reviews';
 
 describe('createReviewSchema', () => {
   it('accepts a valid review', () => {
@@ -21,6 +21,23 @@ describe('createReviewSchema', () => {
 describe('updateReviewSchema', () => {
   it('allows a partial update (active only)', () => {
     const r = updateReviewSchema.safeParse({ active: false });
+    expect(r.success).toBe(true);
+  });
+});
+
+describe('publicReviewSubmitSchema', () => {
+  it('accepts a valid submission', () => {
+    const r = publicReviewSubmitSchema.safeParse({ authorName: 'Guy', email: 'g@x.com', quote: 'Great!' });
+    expect(r.success).toBe(true);
+  });
+
+  it('requires a valid email', () => {
+    const r = publicReviewSubmitSchema.safeParse({ authorName: 'Guy', email: 'not-an-email', quote: 'Great!' });
+    expect(r.success).toBe(false);
+  });
+
+  it('allows the honeypot company field', () => {
+    const r = publicReviewSubmitSchema.safeParse({ authorName: 'Guy', email: 'g@x.com', quote: 'Great!', company: 'bot' });
     expect(r.success).toBe(true);
   });
 });
