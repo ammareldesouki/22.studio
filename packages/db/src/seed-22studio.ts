@@ -175,6 +175,18 @@ async function main() {
     }
   }
 
+  // Client reviews are not localized (one quote shown on both EN & AR), so seed them once,
+  // only when the table is empty — a reseed must not duplicate them.
+  if ((await db.review.count()) === 0) {
+    await db.review.createMany({
+      data: [
+        { quote: 'Impressed by the professionalism and attention to detail.', authorName: 'Guy Hawkins', order: 0 },
+        { quote: 'A seamless experience from start to finish. Highly recommend!', authorName: 'Karla Lynn', order: 1 },
+        { quote: 'Reliable and trustworthy. Made my life so much easier!', authorName: 'Jane Cooper', order: 2 },
+      ],
+    });
+  }
+
   const counts = {
     clients: await db.client.count(),
     services: await db.service.count(),
