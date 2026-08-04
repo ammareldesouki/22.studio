@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { publicContent, type Locale } from '@studioflow/core/public';
 import { Reveal } from '../reveal';
 import { ReviewForm } from '../review-form';
+import { ReviewsDisplay } from '../reviews-display';
 
 // Client reviews section (see docs/image.png): quote mark → review text → client name.
 // Reviews are not localized — the same list renders on both /en and /ar. The section is
@@ -33,23 +34,7 @@ export async function Reviews({
           <ReviewForm />
         </Reveal>
 
-        {reviews.length > 0 && (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {reviews.map((r, i) => (
-              <Reveal key={r.id} delay={i * 0.06}>
-                <figure className="flex h-full flex-col gap-5 rounded-2xl border border-line bg-white/[0.03] p-7">
-                  <span aria-hidden="true" className="font-display text-6xl leading-none text-red">&ldquo;</span>
-                  <blockquote className="text-[clamp(17px,1.8vw,21px)] leading-relaxed text-fg-strong">
-                    {r.quote}
-                  </blockquote>
-                  <figcaption className="mt-auto font-display font-semibold text-fg-strong">
-                    {r.authorName}
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
-          </div>
-        )}
+        <ReviewsDisplay reviews={reviews} />
       </div>
     </section>
   );
