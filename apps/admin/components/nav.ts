@@ -21,6 +21,7 @@ export const NAV: NavGroup[] = [
       { href: '/homepage', label: 'Homepage', perms: [PERMISSIONS.HOMEPAGE_MANAGE] },
       { href: '/messages', label: 'Messages' },
       { href: '/budgets', label: 'Budgets', perms: [PERMISSIONS.SETTINGS_MANAGE] },
+      { href: '/reviews', label: 'Reviews', perms: [PERMISSIONS.SETTINGS_MANAGE] },
     ],
   },
   {
