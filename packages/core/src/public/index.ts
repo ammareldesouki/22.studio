@@ -50,6 +50,12 @@ function iso(d: unknown): string | null {
   return d ? (d as Date).toISOString() : null;
 }
 
+export interface ReviewCard {
+  id: string;
+  quote: string;
+  authorName: string;
+}
+
 export const publicContent = {
   async settings() {
     const s = await db.settings.findFirst();
@@ -108,6 +114,17 @@ export const publicContent = {
       }
       return { id: r.id, type: r.type as string, order: r.order, config };
     });
+  },
+
+  // Client reviews for the marketing site. Not localized — the same active reviews render
+  // on both /en and /ar, ordered by `order`.
+  async listReviews(): Promise<ReviewCard[]> {
+    const rows = await db.review.findMany({
+      where: { active: true },
+      orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
+      select: { id: true, quote: true, authorName: true },
+    });
+    return rows.map((r) => ({ id: r.id, quote: r.quote, authorName: r.authorName }));
   },
 
   async listProjects(opts: { locale?: Locale; limit?: number; cursor?: string; featured?: boolean; clientSlug?: string; serviceSlug?: string } = {}): Promise<{ items: ProjectCard[]; nextCursor: string | null }> {
