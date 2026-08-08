@@ -9,6 +9,7 @@ export interface ReviewRecord {
   quote: string;
   authorName: string;
   email: string | null;
+  pending: boolean;
   order: number;
   active: boolean;
   createdAt: string;
@@ -20,6 +21,7 @@ const SELECT = {
   quote: true,
   authorName: true,
   email: true,
+  pending: true,
   order: true,
   active: true,
   createdAt: true,
@@ -32,6 +34,7 @@ function map(row: Record<string, unknown>): ReviewRecord {
     quote: row.quote as string,
     authorName: row.authorName as string,
     email: (row.email as string) ?? null,
+    pending: row.pending as boolean,
     order: row.order as number,
     active: row.active as boolean,
     createdAt: (row.createdAt as Date).toISOString(),
@@ -76,6 +79,7 @@ export class ReviewsService {
     quote: string;
     authorName: string;
     email?: string | null;
+    pending?: boolean;
     order?: number;
     active?: boolean;
   }): Promise<ReviewRecord> {
@@ -84,6 +88,7 @@ export class ReviewsService {
         quote: input.quote,
         authorName: input.authorName,
         email: input.email ?? null,
+        pending: input.pending ?? false,
         order: input.order ?? 0,
         active: input.active ?? true,
       },
@@ -94,7 +99,7 @@ export class ReviewsService {
 
   async update(
     id: string,
-    input: { quote?: string; authorName?: string; email?: string | null; order?: number; active?: boolean },
+    input: { quote?: string; authorName?: string; email?: string | null; pending?: boolean; order?: number; active?: boolean },
   ): Promise<ReviewRecord> {
     const existing = await db.review.findUnique({ where: { id }, select: { id: true } });
     if (!existing) throw new ReviewsError('Review not found', 'NOT_FOUND', 404);
@@ -103,6 +108,7 @@ export class ReviewsService {
     if (input.quote !== undefined) data.quote = input.quote;
     if (input.authorName !== undefined) data.authorName = input.authorName;
     if ('email' in input) data.email = input.email ?? null;
+    if (input.pending !== undefined) data.pending = input.pending;
     if (input.order !== undefined) data.order = input.order;
     if (input.active !== undefined) data.active = input.active;
 

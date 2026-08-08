@@ -15,6 +15,7 @@ export const updateReviewSchema = z.object({
   quote: z.string().min(1).max(1000).optional(),
   authorName: z.string().min(1).max(120).optional(),
   email: z.string().email().max(200).nullable().optional(),
+  pending: z.boolean().optional(),
   order: z.number().int().nonnegative().optional(),
   active: z.boolean().optional(),
 });

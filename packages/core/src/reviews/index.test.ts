@@ -23,6 +23,8 @@ const row = {
   id: 'r1',
   quote: 'Great work!',
   authorName: 'Guy Hawkins',
+  email: null,
+  pending: false,
   order: 0,
   active: true,
   createdAt: new Date('2026-01-01T00:00:00Z'),
@@ -42,11 +44,11 @@ describe('reviewsService.listActive', () => {
 });
 
 describe('reviewsService.create', () => {
-  it('defaults order to 0 and active to true', async () => {
+  it('defaults order to 0, active to true, and pending to false', async () => {
     (db.review.create as ReturnType<typeof vi.fn>).mockResolvedValue(row);
     await reviewsService.create({ quote: 'Nice', authorName: 'Karla' });
     expect(db.review.create).toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ order: 0, active: true }) }),
+      expect.objectContaining({ data: expect.objectContaining({ order: 0, active: true, pending: false }) }),
     );
   });
 });

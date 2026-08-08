@@ -10,6 +10,7 @@ interface Review {
   quote: string;
   authorName: string;
   email: string | null;
+  pending: boolean;
   order: number;
   active: boolean;
 }
@@ -103,6 +104,17 @@ export default function ReviewsPage() {
     }
   }
 
+  // Accept a pending public submission: clear the pending flag and make it live.
+  async function accept(r: Review) {
+    try {
+      await api(`/api/reviews/${r.id}`, { method: 'PATCH', body: JSON.stringify({ pending: false, active: true }) });
+      toast('Review accepted — now live');
+      reload();
+    } catch (err) {
+      toast(err instanceof Error ? err.message : 'Could not accept', 'error');
+    }
+  }
+
   async function confirmDelete() {
     if (!toDelete) return;
     setDeleting(true);
@@ -117,6 +129,9 @@ export default function ReviewsPage() {
       setDeleting(false);
     }
   }
+
+  const pending = items?.filter((r) => r.pending) ?? [];
+  const published = items?.filter((r) => !r.pending) ?? [];
 
   return (
     <div>
@@ -139,31 +154,73 @@ export default function ReviewsPage() {
           }
         />
       ) : (
-        <ul className="flex flex-col gap-2.5">
-          {items.map((r) => (
-            <li key={r.id} className={`panel flex flex-wrap items-start justify-between gap-3 rounded-xl p-4 ${r.active ? '' : 'opacity-60'}`}>
-              <div className="min-w-0">
-                <p className="text-white">&ldquo;{r.quote}&rdquo;</p>
-                <div className="mt-1 flex flex-wrap items-center gap-2">
-                  <span className="font-display font-semibold text-white">{r.authorName}</span>
-                  {r.email && <span className="chip">{r.email}</span>}
-                  {!r.active && <span className="chip">hidden</span>}
-                </div>
-              </div>
-              <div className="flex shrink-0 gap-2">
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => toggleActive(r)}>
-                  {r.active ? 'Hide' : 'Show'}
-                </button>
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => openEdit(r)}>
-                  Edit
-                </button>
-                <button type="button" className="btn btn-danger btn-sm" onClick={() => setToDelete(r)}>
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="flex flex-col gap-8">
+          {pending.length > 0 && (
+            <section>
+              <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white">
+                Pending approval
+                <span className="chip">{pending.length}</span>
+              </h2>
+              <p className="mb-3 text-[13px] text-muted">Submitted from the site. Accept to make them live, or decline to remove them.</p>
+              <ul className="flex flex-col gap-2.5">
+                {pending.map((r) => (
+                  <li key={r.id} className="panel flex flex-wrap items-start justify-between gap-3 rounded-xl border-l-2 border-red p-4">
+                    <div className="min-w-0">
+                      <p className="text-white">&ldquo;{r.quote}&rdquo;</p>
+                      <div className="mt-1 flex flex-wrap items-center gap-2">
+                        <span className="font-display font-semibold text-white">{r.authorName}</span>
+                        {r.email && <span className="chip">{r.email}</span>}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <button type="button" className="btn btn-red btn-sm" onClick={() => accept(r)}>
+                        Accept
+                      </button>
+                      <button type="button" className="btn btn-danger btn-sm" onClick={() => setToDelete(r)}>
+                        Decline
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          <section>
+            {pending.length > 0 && (
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-white">Published</h2>
+            )}
+            {published.length === 0 ? (
+              <p className="text-[13px] text-muted">No published reviews yet.</p>
+            ) : (
+              <ul className="flex flex-col gap-2.5">
+                {published.map((r) => (
+                  <li key={r.id} className={`panel flex flex-wrap items-start justify-between gap-3 rounded-xl p-4 ${r.active ? '' : 'opacity-60'}`}>
+                    <div className="min-w-0">
+                      <p className="text-white">&ldquo;{r.quote}&rdquo;</p>
+                      <div className="mt-1 flex flex-wrap items-center gap-2">
+                        <span className="font-display font-semibold text-white">{r.authorName}</span>
+                        {r.email && <span className="chip">{r.email}</span>}
+                        {!r.active && <span className="chip">hidden</span>}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 gap-2">
+                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => toggleActive(r)}>
+                        {r.active ? 'Hide' : 'Show'}
+                      </button>
+                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => openEdit(r)}>
+                        Edit
+                      </button>
+                      <button type="button" className="btn btn-danger btn-sm" onClick={() => setToDelete(r)}>
+                        Delete
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
       )}
 
       {form && (
