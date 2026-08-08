@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../components/auth-provider';
+import { PendingReviews } from '../../components/pending-reviews';
 
 interface Stats {
   projects: { published: number; draft: number; archived: number; total: number };
@@ -71,6 +72,8 @@ export default function Dashboard() {
         <StatCard label="Services" value={stats ? stats.services : '—'} href={can('services:manage') ? '/services' : undefined} />
         <StatCard label="Media" value={stats ? stats.media : '—'} href={can('media:upload') ? '/media' : undefined} />
       </div>
+
+      <PendingReviews />
 
       <div className="mt-8 grid gap-4 md:grid-cols-2">
         <div className="panel rounded-xl p-5">
