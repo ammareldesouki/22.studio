@@ -1,8 +1,10 @@
 import { db } from '@studioflow/db';
 
 // Fixed id enforces the singleton: upsert on this key is atomic, so concurrent first-access
-// can never create duplicate Settings rows.
-const SINGLETON_ID = '00000000-0000-0000-0000-000000000001';
+// can never create duplicate Settings rows. Exported so the public read layer resolves the
+// same row the admin writes to — reading with a bare findFirst() can pick a different row.
+export const SETTINGS_SINGLETON_ID = '00000000-0000-0000-0000-000000000001';
+const SINGLETON_ID = SETTINGS_SINGLETON_ID;
 
 const DEFAULT_SETTINGS = {
   siteName: 'Studio',
@@ -11,6 +13,10 @@ const DEFAULT_SETTINGS = {
   contact: {},
 };
 
+// Tracking ids + their on/off switches, stored in the analyticsIds JSON blob (same pattern as
+// contact/seoDefaults/socialLinks). Left open-ended so future providers need no schema change.
+export type AnalyticsIds = Record<string, string | boolean>;
+
 export interface SettingsRecord {
   id: string;
   siteName: string;
@@ -18,7 +24,7 @@ export interface SettingsRecord {
   faviconId: string | null;
   socialLinks: Record<string, string>;
   seoDefaults: Record<string, unknown> | null;
-  analyticsIds: Record<string, string>;
+  analyticsIds: AnalyticsIds;
   contact: Record<string, string> | null;
   version: number;
   createdAt: string;
@@ -33,7 +39,7 @@ function mapSettings(row: Record<string, unknown>): SettingsRecord {
     faviconId: (row.faviconId as string) ?? null,
     socialLinks: (row.socialLinks as Record<string, string>) ?? {},
     seoDefaults: (row.seoDefaults as Record<string, unknown>) ?? null,
-    analyticsIds: (row.analyticsIds as Record<string, string>) ?? {},
+    analyticsIds: (row.analyticsIds as AnalyticsIds) ?? {},
     contact: (row.contact as Record<string, string>) ?? null,
     version: row.version as number,
     createdAt: (row.createdAt as Date).toISOString(),
@@ -73,7 +79,7 @@ export class SettingsService {
     faviconId?: string | null;
     socialLinks?: Record<string, string>;
     seoDefaults?: Record<string, unknown>;
-    analyticsIds?: Record<string, string>;
+    analyticsIds?: AnalyticsIds;
     contact?: Record<string, string>;
     version: number;
   }): Promise<SettingsRecord> {
