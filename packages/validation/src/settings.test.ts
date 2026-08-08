@@ -47,3 +47,47 @@ describe('updateSettingsSchema — no raw-HTML editing path (SC-006)', () => {
     expect(r.success).toBe(true);
   });
 });
+
+describe('updateSettingsSchema — analyticsIds', () => {
+  it('accepts tracking ids alongside their boolean switches', () => {
+    const r = updateSettingsSchema.safeParse({
+      analyticsIds: {
+        ga4MeasurementId: 'G-ABC1234567',
+        ga4Enabled: true,
+        metaPixelId: '4068035563505322',
+        metaPixelEnabled: false,
+      },
+      version: 1,
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it('accepts switches on their own, so tracking can be turned off without an id', () => {
+    const r = updateSettingsSchema.safeParse({
+      analyticsIds: { ga4Enabled: false, metaPixelEnabled: false },
+      version: 1,
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it('still saves a malformed id — the admin warns, it does not block', () => {
+    const r = updateSettingsSchema.safeParse({
+      analyticsIds: { ga4MeasurementId: 'G-abc', metaPixelId: '12ab34' },
+      version: 1,
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it('rejects HTML smuggled into a tracking id', () => {
+    const r = updateSettingsSchema.safeParse({
+      analyticsIds: { ga4MeasurementId: "G-AAAA'</script><script>alert(1)</script>" },
+      version: 1,
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it('rejects a non-boolean switch', () => {
+    const r = updateSettingsSchema.safeParse({ analyticsIds: { ga4Enabled: 'true' }, version: 1 });
+    expect(r.success).toBe(false);
+  });
+});

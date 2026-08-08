@@ -1,5 +1,6 @@
 import { db } from '@studioflow/db';
 import { columnsToSeo, type Seo } from '@studioflow/core/content-engine';
+import { SETTINGS_SINGLETON_ID, type AnalyticsIds } from '@studioflow/core/settings';
 
 // Public read layer for the marketing site. Unlike the admin services (which are the admin
 // view and return every status), every read here hard-filters PUBLISHED content and the
@@ -58,7 +59,12 @@ export interface ReviewCard {
 
 export const publicContent = {
   async settings() {
-    const s = await db.settings.findFirst();
+    // Resolve the same singleton row the admin writes to. A bare findFirst() can return a
+    // different row if the DB ever holds more than one Settings record (older seeds could
+    // create one with a random id), which would silently render stale/blank site config.
+    const s =
+      (await db.settings.findUnique({ where: { id: SETTINGS_SINGLETON_ID } })) ??
+      (await db.settings.findFirst());
     if (!s) return null;
     const imgIds = [s.logoId, s.faviconId].filter((x): x is string => !!x);
     const urlMap = new Map<string, string>();
@@ -73,6 +79,7 @@ export const publicContent = {
       socialLinks: (s.socialLinks as Record<string, string>) ?? {},
       seoDefaults: (s.seoDefaults as Record<string, unknown>) ?? {},
       contact: (s.contact as Record<string, string>) ?? {},
+      analyticsIds: (s.analyticsIds as AnalyticsIds) ?? {},
     };
   },
 

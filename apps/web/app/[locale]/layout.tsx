@@ -10,6 +10,8 @@ import { Footer } from '../../components/footer';
 import { Cursor } from '../../components/cursor';
 import { SmoothScroll } from '../../components/smooth-scroll';
 import { ThemeProvider, THEME_INIT_SCRIPT } from '../../components/theme';
+import { Analytics } from '../../components/analytics';
+import { resolveAnalytics } from '../../lib/analytics';
 import '../globals.css';
 
 // Refresh the shell (nav/footer read from CMS Settings) within a minute of an edit.
@@ -69,6 +71,9 @@ export default async function LocaleLayout({
   const siteName = settings?.siteName ?? undefined;
   const logoUrl = settings?.logoUrl ?? null;
 
+  // Tracking runs site-wide (both locales, every route) — this layout is the only document shell.
+  const analytics = resolveAnalytics(settings?.analyticsIds);
+
   return (
     <html lang={locale} dir={dir} data-theme="dark" suppressHydrationWarning className={`${montserrat.variable} ${openSans.variable} ${plexArabic.variable}`}>
       <head>
@@ -86,6 +91,7 @@ export default async function LocaleLayout({
             </SmoothScroll>
           </NextIntlClientProvider>
         </ThemeProvider>
+        <Analytics {...analytics} />
       </body>
     </html>
   );
